@@ -33,7 +33,7 @@ header { background: var(--card); border-bottom: 1px solid var(--card-border); p
 .logo { font-size: 22px; font-weight: 800; color: var(--accent); display: flex; align-items: center; gap: 6px; }
 .logo span { color: var(--text); }
 nav { display: flex; gap: 20px; align-items: center; }
-nav a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 600; }
+nav a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 600; cursor: pointer; }
 nav a:hover { color: var(--text); }
 .btn-login { background: var(--accent); color: white; border: 0; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 .btn-login:hover { background: var(--accent-hover); }
@@ -46,7 +46,7 @@ main { max-width: 1000px; margin: 30px auto; padding: 0 18px; }
 .control-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
 select, input, button { font: inherit; border-radius: 8px; outline: none; }
-select, input[type="number"] { border: 1px solid var(--card-border); padding: 9px 12px; background: var(--bg); color: var(--text); }
+select, input[type="number"], input[type="text"], input[type="email"] { border: 1px solid var(--card-border); padding: 9px 12px; background: var(--bg); color: var(--text); }
 button { border: 0; padding: 10px 18px; background: var(--accent); color: white; font-weight: 700; cursor: pointer; border-radius: 8px; }
 button.secondary { background: var(--card-border); color: var(--text); }
 button.secondary:hover { background: #475569; }
@@ -74,7 +74,6 @@ button.secondary:hover { background: #475569; }
 }
 #typingArena.bn-mode { font-family: var(--font-bn); font-size: 24px; }
 
-/* Fixed Word Wrapping Bug (No breaking words halfway across lines) */
 #textContainer {
   display: block;
   white-space: pre-wrap;
@@ -111,10 +110,19 @@ button.secondary:hover { background: #475569; }
 .tw { background: #000000; }
 .li { background: #0a66c2; }
 
-/* Modal */
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 1000; }
+/* Leaderboard & History Tables */
+.tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+.tab-btn { background: var(--card-border); color: var(--text); padding: 8px 14px; font-size: 13px; border-radius: 6px; cursor: pointer; }
+.tab-btn.active { background: var(--accent); }
+
+table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--card-border); }
+th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+
+/* Modal Overlay */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 9999; }
 .modal { background: var(--card); border: 1px solid var(--card-border); width: 100%; max-width: 400px; padding: 24px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
-.modal h3 { margin-top: 0; }
+.modal h3 { margin-top: 0; color: var(--text); }
 .modal input { width: 100%; margin-bottom: 12px; }
 
 footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--card-border); margin-top: 40px; }
@@ -131,8 +139,8 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
   <div class="logo">Type<span>Flow</span></div>
   <nav>
     <a href="#test">Typing Test</a>
-    <a href="#practice">Topics</a>
-    <button class="btn-login" id="openAuthBtn">Login / Sign Up</button>
+    <a href="#dashboard">Dashboard</a>
+    <button class="btn-login" id="openAuthBtn" type="button">Login / Sign Up</button>
   </nav>
 </header>
 
@@ -224,24 +232,65 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
         <button id="tryAgainBtn">🔄 Take Another Test</button>
       </div>
     </div>
-
   </section>
 
-  <!-- User Status Section -->
+  <!-- User Dashboard & History Section -->
+  <section class="card" id="dashboard">
+    <h3 style="margin-top:0;">👤 User Status & History</h3>
+    <p id="userStatus">You are practicing as a <strong>Guest User</strong>. Login to save your progress permanently.</p>
+
+    <h4 style="margin-top:20px;">📜 Your Typing History</h4>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Date & Time</th>
+            <th>WPM</th>
+            <th>Accuracy</th>
+            <th>Mistakes</th>
+          </tr>
+        </thead>
+        <tbody id="historyTableBody">
+          <tr><td colspan="4" style="text-align:center; color:var(--muted);">No typing history yet. Complete a test!</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Leaderboard Section -->
   <section class="card">
-    <h3 style="margin-top:0;">👤 User Status & Leaderboard</h3>
-    <p id="userStatus">You are practicing as a <strong>Guest User</strong>. Login to save your progress and global rankings!</p>
+    <h3 style="margin-top:0;">🏆 Global Typing Leaderboard</h3>
+    <div class="tabs">
+      <button class="tab-btn active" id="dailyTab">Daily Top</button>
+      <button class="tab-btn" id="weeklyTab">Weekly Top</button>
+    </div>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Speed (WPM)</th>
+            <th>Accuracy</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboardTableBody">
+          <tr><td colspan="5" style="text-align:center; color:var(--muted);">No scores recorded yet. Be the first!</td></tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 </main>
 
-<!-- Login Modal -->
+<!-- Login / Sign Up Modal -->
 <div class="modal-overlay" id="authModal">
   <div class="modal">
     <h3>User Login / Register</h3>
-    <p style="font-size:13px; color:var(--muted);">Save your typing results and dashboard stats.</p>
+    <p style="font-size:13px; color:var(--muted); margin-bottom:15px;">Save your typing results and dashboard stats.</p>
     <input type="text" id="userName" placeholder="Your Full Name">
     <input type="email" id="userEmail" placeholder="Your Email Address">
-    <button id="submitAuth" style="width:100%;">Continue</button>
+    <button id="submitAuth" style="width:100%; margin-top:5px;">Continue</button>
     <button id="closeAuth" class="secondary" style="width:100%; margin-top:8px;">Close</button>
   </div>
 </div>
@@ -290,12 +339,22 @@ document.addEventListener("DOMContentLoaded", function() {
   const closeAuth = document.getElementById("closeAuth");
   const submitAuth = document.getElementById("submitAuth");
 
+  const historyTableBody = document.getElementById("historyTableBody");
+  const leaderboardTableBody = document.getElementById("leaderboardTableBody");
+  const dailyTab = document.getElementById("dailyTab");
+  const weeklyTab = document.getElementById("weeklyTab");
+
   let fullText = "";
   let typedChars = [];
   let timer = null;
   let maxTime = 60;
   let timeLeft = 60;
   let isTyping = false;
+  let currentUser = localStorage.getItem("typeflow_user") ? JSON.parse(localStorage.getItem("typeflow_user")) : { name: "Guest User", email: "" };
+
+  if (currentUser.email) {
+    document.getElementById("userStatus").innerHTML = `Welcome back, <strong>${currentUser.name}</strong> (${currentUser.email})! Your progress is saved.`;
+  }
 
   function keepFocus() {
     if (congratsScreen.style.display !== "block" && authModal.style.display !== "flex") {
@@ -303,10 +362,48 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  window.addEventListener("load", keepFocus);
+  window.addEventListener("load", () => {
+    keepFocus();
+    loadHistory();
+    loadLeaderboard('daily');
+  });
+
   document.addEventListener("click", (e) => {
-    if (!e.target.closest('button') && !e.target.closest('select') && !e.target.closest('input') && !e.target.closest('a')) {
+    if (!e.target.closest('button') && !e.target.closest('select') && !e.target.closest('input') && !e.target.closest('a') && !e.target.closest('.modal')) {
       keepFocus();
+    }
+  });
+
+  openAuthBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    authModal.style.display = "flex";
+  });
+
+  closeAuth.addEventListener("click", () => {
+    authModal.style.display = "none";
+    keepFocus();
+  });
+
+  authModal.addEventListener("click", (e) => {
+    if (e.target === authModal) {
+      authModal.style.display = "none";
+      keepFocus();
+    }
+  });
+
+  submitAuth.addEventListener("click", () => {
+    const name = document.getElementById("userName").value.trim();
+    const email = document.getElementById("userEmail").value.trim();
+    
+    if (name && email) {
+      currentUser = { name, email };
+      localStorage.setItem("typeflow_user", JSON.stringify(currentUser));
+      document.getElementById("userStatus").innerHTML = `Welcome back, <strong>${name}</strong> (${email})! Your progress is saved.`;
+      authModal.style.display = "none";
+      sendTelegramLead({ name, email });
+      keepFocus();
+    } else {
+      alert("Please fill in both name and email.");
     }
   });
 
@@ -446,21 +543,6 @@ document.addEventListener("DOMContentLoaded", function() {
   restartBtn.addEventListener("click", initTest);
   tryAgainBtn.addEventListener("click", initTest);
 
-  document.getElementById("listen").addEventListener("click", () => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utt = new SpeechSynthesisUtterance(fullText.slice(0, 100));
-      utt.lang = languageSelect.value === 'bn' ? 'bn-BD' : 'en-US';
-      window.speechSynthesis.speak(utt);
-    }
-    keepFocus();
-  });
-
-  document.getElementById("stopListen").addEventListener("click", () => {
-    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-    keepFocus();
-  });
-
   function endTest() {
     clearInterval(timer);
     isTyping = false;
@@ -478,6 +560,9 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("finalAcc").textContent = finalAccVal;
     document.getElementById("finalMistakes").textContent = finalMistakesVal;
 
+    // Save Score to LocalStorage History & Leaderboard
+    saveScoreRecord(finalWpmVal, finalAccVal, finalMistakesVal);
+
     const shareText = encodeURIComponent(`I just scored ${finalWpmVal} WPM with ${finalAccVal} accuracy on TypeFlow Typing Practice! Check it out.`);
     document.getElementById("shareFb").href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${shareText}`;
     document.getElementById("shareWa").href = `https://api.whatsapp.com/send?text=${shareText}`;
@@ -485,9 +570,90 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("shareLi").href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`;
   }
 
+  function saveScoreRecord(wpm, accuracy, mistakes) {
+    const record = {
+      name: currentUser.name || "Guest User",
+      wpm: parseInt(wpm, 10),
+      accuracy: accuracy,
+      mistakes: mistakes,
+      date: new Date().toISOString()
+    };
+
+    // Save History
+    let history = JSON.parse(localStorage.getItem("typeflow_history")) || [];
+    history.unshift(record);
+    if (history.length > 20) history.pop(); // keep last 20
+    localStorage.setItem("typeflow_history", JSON.stringify(history));
+
+    // Save Leaderboard Scores
+    let leaderboard = JSON.parse(localStorage.getItem("typeflow_leaderboard")) || [];
+    leaderboard.push(record);
+    localStorage.setItem("typeflow_leaderboard", JSON.stringify(leaderboard));
+
+    loadHistory();
+    loadLeaderboard('daily');
+  }
+
+  function loadHistory() {
+    let history = JSON.parse(localStorage.getItem("typeflow_history")) || [];
+    if (history.length === 0) {
+      historyTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--muted);">No typing history yet. Complete a test!</td></tr>`;
+      return;
+    }
+
+    historyTableBody.innerHTML = "";
+    history.forEach(item => {
+      const dateStr = new Date(item.date).toLocaleString();
+      const row = `<tr><td>${dateStr}</td><td><strong>${item.wpm}</strong></td><td>${item.accuracy}</td><td>${item.mistakes}</td></tr>`;
+      historyTableBody.innerHTML += row;
+    });
+  }
+
+  function loadLeaderboard(type) {
+    let leaderboard = JSON.parse(localStorage.getItem("typeflow_leaderboard")) || [];
+    const now = new Date().getTime();
+
+    // Filter by Daily (24h) or Weekly (7 days)
+    const filtered = leaderboard.filter(item => {
+      const itemTime = new Date(item.date).getTime();
+      const diffTime = now - itemTime;
+      if (type === 'daily') {
+        return diffTime <= 24 * 60 * 60 * 1000;
+      } else {
+        return diffTime <= 7 * 24 * 60 * 60 * 1000;
+      }
+    });
+
+    // Sort by WPM descending
+    filtered.sort((a, b) => b.wpm - a.wpm);
+
+    if (filtered.length === 0) {
+      leaderboardTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--muted);">No scores recorded for this period yet!</td></tr>`;
+      return;
+    }
+
+    leaderboardTableBody.innerHTML = "";
+    filtered.slice(0, 10).forEach((item, index) => {
+      const dateStr = new Date(item.date).toLocaleDateString();
+      const row = `<tr><td>#${index + 1}</td><td>${item.name}</td><td><strong>${item.wpm}</strong></td><td>${item.accuracy}</td><td>${dateStr}</td></tr>`;
+      leaderboardTableBody.innerHTML += row;
+    });
+  }
+
+  dailyTab.addEventListener("click", () => {
+    dailyTab.classList.add("active");
+    weeklyTab.classList.remove("active");
+    loadLeaderboard('daily');
+  });
+
+  weeklyTab.addEventListener("click", () => {
+    weeklyTab.classList.add("active");
+    dailyTab.classList.remove("active");
+    loadLeaderboard('weekly');
+  });
+
   async function sendTelegramLead(userData) {
     if (TELEGRAM_BOT_TOKEN === "YOUR_BOT_TOKEN_HERE" || TELEGRAM_CHAT_ID === "YOUR_CHAT_ID_HERE") {
-      console.log("Telegram token/chat_id not configured.");
       return;
     }
 
@@ -518,26 +684,6 @@ document.addEventListener("DOMContentLoaded", function() {
       console.log("Telegram lead error:", err);
     }
   }
-
-  openAuthBtn.addEventListener("click", () => authModal.style.display = "flex");
-  closeAuth.addEventListener("click", () => {
-    authModal.style.display = "none";
-    keepFocus();
-  });
-  
-  submitAuth.addEventListener("click", () => {
-    const name = document.getElementById("userName").value;
-    const email = document.getElementById("userEmail").value;
-    
-    if (name && email) {
-      document.getElementById("userStatus").innerHTML = `Welcome back, <strong>${name}</strong> (${email})! Your progress is now saved.`;
-      authModal.style.display = "none";
-      sendTelegramLead({ name, email });
-      keepFocus();
-    } else {
-      alert("Please fill in both name and email.");
-    }
-  });
 
   initTest();
 });
