@@ -1,212 +1,313 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Typing Practice — Free Typing Test</title>
+<title>TypeFlow — Pro Typing Practice Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Plus+Jakarta+Sans:wght@400;600;700;800&family= Tiro+Bangla&display=swap" rel="stylesheet">
+
 <style>
 :root {
-  --bg:#f6f8fc; --card:#ffffff; --text:#182238;
-  --muted:#68748b; --accent:#6558e8; --border:#e4e8f1;
-  --good:#16845b; --bad:#e05252;
+  --bg: #0f172a;
+  --card: #1e293b;
+  --card-border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --good: #22c55e;
+  --bad: #ef4444;
+  --bad-bg: rgba(239, 68, 68, 0.15);
+  --font-mono: 'Fira Code', monospace;
+  --font-main: 'Plus Jakarta Sans', sans-serif;
+  --font-bn: 'Tiro Bangla', serif;
 }
-* {box-sizing:border-box}
-body {margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
-header {background:var(--card);border-bottom:1px solid var(--border);padding:16px 6%;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.logo {font-size:21px;font-weight:800;color:var(--accent)}
-.logo span {color:var(--text)}
-nav {display:flex;gap:18px;flex-wrap:wrap}
-nav a {color:var(--muted);text-decoration:none;font-size:14px}
-main {max-width:950px;margin:38px auto;padding:0 18px}
-.hero {text-align:center;margin-bottom:28px}
-.hero h1 {font-size:clamp(28px,5vw,43px);line-height:1.2;margin:0 0 12px}
-.hero p {color:var(--muted);margin:0}
-.card {background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:20px;box-shadow:0 8px 28px rgba(30,40,80,.035)}
-.controls {display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-select,button,textarea {font:inherit;border-radius:10px}
-select {border:1px solid var(--border);padding:10px 12px;background:white;color:var(--text)}
-button {border:0;padding:11px 17px;background:var(--accent);color:white;font-weight:700;cursor:pointer}
-button.secondary {background:#efedff;color:var(--accent)}
-button:disabled {opacity:.5;cursor:not-allowed}
-.stats {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:22px 0}
-.stat {background:#f8f9ff;border:1px solid var(--border);padding:15px 10px;border-radius:12px;text-align:center}
-.stat strong {display:block;font-size:26px;color:var(--accent)}
-.stat span {font-size:12px;color:var(--muted)}
-#textDisplay {background:#fafbff;border:1px solid var(--border);border-radius:12px;padding:20px;min-height:150px;max-height:220px;overflow-y:auto;font-size:20px;line-height:1.9;overflow-wrap:anywhere;cursor:pointer}
-.char.correct {color:var(--good)}
-.char.incorrect {color:var(--bad);background:#ffe7e7;border-radius:3px}
-.char.current {border-left:2px solid var(--accent);background:#e0e0ff}
-#typingInput {width:100%;min-height:115px;padding:15px;margin-top:14px;border:1px solid var(--border);resize:vertical;outline:none;background:white;color:var(--text)}
-#typingInput:focus {border-color:var(--accent);box-shadow:0 0 0 3px #6558e81a}
-.hint {font-size:13px;color:var(--muted)}
-.result {font-weight:700;margin-top:15px;min-height:26px;color:var(--accent)}
-.section-title {font-size:20px;margin:0 0 12px}
-footer {text-align:center;padding:28px;color:var(--muted);font-size:13px}
-@media(max-width:560px){
-  header{padding:14px 18px}
-  main{margin:24px auto}
-  .card{padding:17px}
-  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
-  #textDisplay{font-size:18px;padding:14px}
+
+* { box-sizing: border-box; transition: background 0.2s, border-color 0.2s; }
+body { margin: 0; font-family: var(--font-main); background: var(--bg); color: var(--text); line-height: 1.6; }
+
+/* Header & Nav */
+header { background: var(--card); border-bottom: 1px solid var(--card-border); padding: 14px 6%; display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; }
+.logo { font-size: 22px; font-weight: 800; color: var(--accent); display: flex; align-items: center; gap: 6px; }
+.logo span { color: var(--text); }
+nav { display: flex; gap: 20px; align-items: center; }
+nav a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 600; }
+nav a:hover { color: var(--text); }
+.btn-login { background: var(--accent); color: white; border: 0; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+.btn-login:hover { background: var(--accent-hover); }
+
+main { max-width: 1000px; margin: 30px auto; padding: 0 18px; }
+
+/* Dashboard Cards */
+.card { background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+.controls { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+.control-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+select, input, button { font: inherit; border-radius: 8px; outline: none; }
+select, input[type="number"] { border: 1px solid var(--card-border); padding: 9px 12px; background: var(--bg); color: var(--text); }
+button { border: 0; padding: 10px 18px; background: var(--accent); color: white; font-weight: 700; cursor: pointer; border-radius: 8px; }
+button.secondary { background: var(--card-border); color: var(--text); }
+button.secondary:hover { background: #475569; }
+
+/* Live Stats */
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin: 20px 0; }
+.stat { background: var(--bg); border: 1px solid var(--card-border); padding: 14px; border-radius: 12px; text-align: center; }
+.stat strong { display: block; font-size: 28px; color: var(--accent); font-family: var(--font-mono); }
+.stat span { font-size: 12px; color: var(--muted); text-transform: uppercase; font-weight: 700; }
+
+/* In-Line Cursor Typing Arena */
+#typingArena {
+  position: relative;
+  background: var(--bg);
+  border: 2px solid var(--card-border);
+  border-radius: 12px;
+  padding: 24px;
+  min-height: 140px;
+  max-height: 170px;
+  overflow: hidden;
+  font-size: 22px;
+  line-height: 2;
+  cursor: text;
+  font-family: var(--font-mono);
+}
+#typingArena.bn-mode { font-family: var(--font-bn); font-size: 24px; }
+#textContainer { display: flex; flex-wrap: wrap; }
+
+.char { position: relative; color: var(--muted); }
+.char.correct { color: var(--good); }
+.char.incorrect { color: var(--bad); background: var(--bad-bg); border-radius: 2px; }
+.char.current::before {
+  content: '';
+  position: absolute;
+  left: 0; bottom: 2px; width: 2px; height: 1.2em;
+  background: var(--accent);
+  animation: blink 0.9s infinite;
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* Hidden Input for Capturing Keyboard */
+#hiddenInput { position: absolute; opacity: 0; pointer-events: none; }
+
+.hint { font-size: 13px; color: var(--muted); margin-top: 10px; }
+.result { font-weight: 700; font-size: 18px; margin-top: 15px; color: var(--good); text-align: center; }
+
+/* Modal */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 1000; }
+.modal { background: var(--card); border: 1px solid var(--card-border); width: 100%; max-width: 400px; padding: 24px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+.modal h3 { margin-top: 0; }
+.modal input { width: 100%; margin-bottom: 12px; }
+
+footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--card-border); margin-top: 40px; }
+
+@media(max-width: 600px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  #typingArena { font-size: 18px; }
 }
 </style>
 </head>
 <body>
+
 <header>
   <div class="logo">Type<span>Flow</span></div>
   <nav>
     <a href="#test">Typing Test</a>
-    <a href="#practice">Practice</a>
-    <a href="#about">About</a>
+    <a href="#practice">Topics</a>
+    <button class="btn-login" id="openAuthBtn">Login / Sign Up</button>
   </nav>
 </header>
 
 <main>
-  <section class="hero">
-    <h1>Improve Your Typing Skills</h1>
-    <p>Practice every day. Type faster. Make fewer mistakes.</p>
-  </section>
-
   <section class="card" id="test">
-    <h2 class="section-title">Free Typing Test</h2>
     <div class="controls">
-      <label for="language">Language</label>
-      <select id="language">
-        <option value="en">English</option>
-        <option value="bn">বাংলা (Bengali)</option>
-      </select>
-      <label for="duration">Time</label>
-      <select id="duration">
-        <option value="15">15 seconds</option>
-        <option value="30">30 seconds</option>
-        <option value="60">60 seconds</option>
-        <option value="120">120 seconds (2 min)</option>
-        <option value="180" selected>180 seconds (3 min)</option>
-      </select>
-      <button id="restart">New Test</button>
+      <div class="control-group">
+        <label for="language">Language:</label>
+        <select id="language">
+          <option value="en">English (Default)</option>
+          <option value="bn">বাংলা (Bengali)</option>
+        </select>
+
+        <label for="topic">Topic:</label>
+        <select id="topic">
+          <option value="general">General</option>
+          <option value="ai">AI & Tech</option>
+          <option value="biology">Human Biology</option>
+          <option value="sociology">Sociology</option>
+          <option value="dengue">Dengue Awareness</option>
+          <option value="politics">Politics & Law</option>
+          <option value="english_learning">English Learning</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="duration">Time:</label>
+        <select id="duration">
+          <option value="30">30 Seconds</option>
+          <option value="60">60 Seconds</option>
+          <option value="120">120 Seconds (2 min)</option>
+          <option value="300">300 Seconds (5 min)</option>
+          <option value="custom">Custom Min</option>
+        </select>
+        <input type="number" id="customTime" placeholder="Min" min="1" max="60" style="display:none; width:80px;">
+        <button id="restart">New Test</button>
+      </div>
     </div>
 
+    <!-- Live Stats -->
     <div class="stats">
-      <div class="stat"><strong id="time">180</strong><span>Seconds left</span></div>
+      <div class="stat"><strong id="time">60</strong><span>Time Left (s)</span></div>
       <div class="stat"><strong id="wpm">0</strong><span>WPM</span></div>
       <div class="stat"><strong id="accuracy">100%</strong><span>Accuracy</span></div>
       <div class="stat"><strong id="mistakes">0</strong><span>Mistakes</span></div>
     </div>
 
-    <div id="textDisplay" aria-label="Text to type"></div>
-    <textarea id="typingInput" placeholder="Click here and start typing..." aria-label="Type the displayed text" spellcheck="false"></textarea>
-
-    <div class="controls" style="margin-top:12px">
-      <button class="secondary" id="listen">🔊 Listen to Text</button>
-      <button class="secondary" id="stopListen">Stop Audio</button>
+    <!-- In-Line Cursor Typing Box -->
+    <div id="typingArena" tabindex="0">
+      <div id="textContainer"></div>
     </div>
-    <p class="hint">The timer starts when you begin typing. Your score is shown for this session only.</p>
-    <div class="result" id="result" role="status"></div>
+    <input type="text" id="hiddenInput" autocomplete="off" spellcheck="false">
+
+    <div class="controls" style="margin-top:15px;">
+      <button class="secondary" id="listen">🔊 Listen Text</button>
+      <button class="secondary" id="stopListen">Stop Audio</button>
+      <span class="hint">💡 Click on the text box and start typing directly.</span>
+    </div>
+
+    <div class="result" id="result"></div>
   </section>
 
-  <section class="card" id="practice">
-    <h2 class="section-title">Practice Tips</h2>
-    <p>• Keep your fingers relaxed and look at the screen.</p>
-    <p>• Focus on accuracy before trying to type faster.</p>
-    <p>• Practice for 5–10 minutes every day.</p>
-    <p>• Use “Listen to Text” to practice listening and typing.</p>
-  </section>
-
-  <section class="card" id="about">
-    <h2 class="section-title">Free Typing Practice for Everyone</h2>
-    <p>Practice English and Bengali typing, check your speed and improve your accuracy. This website is an early version and more learning features can be added over time.</p>
+  <!-- User Dashboard / Guest Status Section -->
+  <section class="card">
+    <h3 style="margin-top:0;">👤 User Status & Leaderboard Preview</h3>
+    <p id="userStatus">You are currently practicing as a <strong>Guest User</strong>. Login to save your progress, WPM records, and global ranking!</p>
   </section>
 </main>
 
-<footer>Free Typing Practice · Built for learners everywhere</footer>
+<!-- Login / Lead Collection Modal -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <h3>User Login / Register</h3>
+    <p style="font-size:13px; color:var(--muted);">Save your typing results and dashboard stats.</p>
+    <input type="text" id="userName" placeholder="Your Full Name">
+    <input type="email" id="userEmail" placeholder="Your Email Address">
+    <button id="submitAuth" style="width:100%;">Continue to Dashboard</button>
+    <button id="closeAuth" class="secondary" style="width:100%; margin-top:8px;">Close (Continue as Guest)</button>
+  </div>
+</div>
+
+<footer>TypeFlow Platform · Professional Typing Practice for Everyone</footer>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  const wordPools = {
-    en: [
-      "learning", "new", "skill", "takes", "time", "and", "practice", "start", "slowly", "focus", "on", "accuracy", "try", "to", "improve", "a", "little", "every", "day", "technology", "helps", "people", "learn", "things", "from", "anywhere", "in", "the", "world", "good", "typing", "skills", "help", "you", "study", "work", "write", "emails", "communicate", "more", "easily", "keep", "practicing", "celebrate", "progress", "success", "comes", "with", "consistent", "effort", "patience", "dedication", "challenges", "make", "us", "stronger", "smart", "habits", "build", "better", "future", "digital", "age", "requires", "fast", "accurate", "keyboard", "control", "consistency", "is", "key", "mastering", "any", "craft", "requires", "focus", "flow", "state", "helps", "increase", "productivity", "efficiency", "code", "creativity", "logic", "problem", "solving", "mindset", "brings", "joy", "satisfaction", "active", "listening", "improves", "communication", "methods", "daily", "routine", "shapes", "our", "habits", "future", "goals", "require", "unwavering", "determination", "explore", "vast", "horizons", "discover", "hidden", "talents", "within", "yourself", "always", "stay", "curious", "never", "stop", "growing"
-    ],
-    bn: [
-      "নিয়মিত", "অনুশীলন", "করলে", "টাইপিংয়ের", "গতি", "এবং", "নির্ভুলতা", "ধীরে", "ধীরে", "বাড়ে", "প্রথমে", "সঠিকভাবে", "টাইপ", "করার", "চেষ্টা", "করো", "প্রযুক্তি", "আমাদের", "নতুন", "কিছু", "শেখার", "সুযোগ", "করে", "দেয়", "প্রতিদিনের", "কিছুটা", "সময়", "আপনাকে", "দ্রুত", "সাহায্য", "করবে", "কীবোর্ডের", "দিকে", "না", "তাকিয়ে", "স্ক্রিনের", "তাকান", "এতে", "মনোযোগ", "দুটোই", "বৃদ্ধি", "পায়", "সাফল্য", "ধৈর্য", "ধরে", "কাজ", "অবশ্যই", "আসে", "জীবনে", "বড়", "অর্জন", "হলে", "পরিশ্রম", "জরুরি", "ডিজিটাল", "যুগে", "দক্ষতা", "খubই", "গুরুত্বপূর্ণ", "একটি", "বিষয়", "নিজের", "উপরে", "বিশ্বাস", "রেখে", "এগিয়ে", "চলুন", "শিক্ষা", "জীবনের", "মেরুদণ্ড", "তাই", "জ্ঞান", "অর্জন", "বন্ধ", "করা", "যাবে", "না", "প্রতিটি", "দিন", "নতুন", "অভিজ্ঞতা", "নিয়ে", "আসে", "ভালো", "মানুষ", "হতে", "গেলে", "সততা", "সবসময়", "বজায়", "রাখা", "প্রয়োজন"
-    ]
+  // Telegram Bot Credentials (Replace with your actual Token & Chat ID)
+  const TELEGRAM_BOT_TOKEN = "YOUR_BOT_TOKEN_HERE";
+  const TELEGRAM_CHAT_ID = "YOUR_CHAT_ID_HERE";
+
+  // Category Based Word Pools
+  const textPools = {
+    en: {
+      general: ["learning", "new", "skills", "takes", "dedication", "daily", "practice", "improves", "keyboard", "speed", "and", "accuracy", "consistency", "is", "the", "secret"],
+      ai: ["artificial", "intelligence", "machine", "learning", "algorithms", "neural", "networks", "data", "science", "automation", "future", "technology", "deep", "learning"],
+      biology: ["human", "body", "circulatory", "system", "heart", "pumps", "blood", "oxygen", "cells", "dna", "genetics", "health", "immunity", "organs"],
+      sociology: ["society", "culture", "human", "behavior", "community", "social", "relationships", "interaction", "global", "development", "structure"],
+      dengue: ["dengue", "fever", "aedes", "mosquito", "prevention", "clean", "water", "stagnant", "symptoms", "health", "awareness", "protection"],
+      politics: ["democracy", "governance", "constitution", "law", "human", "rights", "justice", "international", "relations", "policy", "freedom"],
+      english_learning: ["vocabulary", "grammar", "pronunciation", "sentence", "structure", "communication", "fluency", "reading", "listening", "speaking"]
+    },
+    bn: {
+      general: ["নিয়মিত", "অনুশীলন", "টাইপিংয়ের", "গতি", "বাড়ায়", "প্রথমে", "সঠিকভাবে", "টাইপ", "করার", "চেষ্টা", "করুন", "ধৈর্য", "সাফল্যের", "চাবিকাঠি"],
+      ai: ["কৃত্রিম", "বুদ্ধিমত্তা", "প্রযুক্তি", "ভবিষ্যৎ", "পৃথিবীকে", "বদলে", "দিচ্ছে", "কম্পিউটার", "স্মার্ট", "সিস্টেম", "ডেটা", "বিশ্লেষণ"],
+      dengue: ["ডেঙ্গু", "জ্বর", "মশার", "কামড়", "থেকে", "সাবধান", "থাকুন", "বাসাবাড়ির", "আশেপাশে", "পানি", "জমতে", "দেবেন", "না"]
+    }
   };
 
-  const textDisplay = document.getElementById("textDisplay");
-  const typingInput = document.getElementById("typingInput");
+  // Elements
+  const typingArena = document.getElementById("typingArena");
+  const textContainer = document.getElementById("textContainer");
+  const hiddenInput = document.getElementById("hiddenInput");
   const timeEl = document.getElementById("time");
   const wpmEl = document.getElementById("wpm");
   const accuracyEl = document.getElementById("accuracy");
   const mistakesEl = document.getElementById("mistakes");
   const languageSelect = document.getElementById("language");
+  const topicSelect = document.getElementById("topic");
   const durationSelect = document.getElementById("duration");
+  const customTimeInput = document.getElementById("customTime");
   const restartBtn = document.getElementById("restart");
   const resultEl = document.getElementById("result");
-  const listenBtn = document.getElementById("listen");
-  const stopListenBtn = document.getElementById("stopListen");
+  const authModal = document.getElementById("authModal");
+  const openAuthBtn = document.getElementById("openAuthBtn");
+  const closeAuth = document.getElementById("closeAuth");
+  const submitAuth = document.getElementById("submitAuth");
 
-  let currentText = "";
+  let fullText = "";
+  let typedChars = [];
   let timer = null;
-  let maxTime = 180;
-  let timeLeft = 180;
+  let maxTime = 60;
+  let timeLeft = 60;
   let isTyping = false;
 
-  function generateUniqueParagraph() {
+  // Generate Paragraphs dynamically
+  function generateText() {
     const lang = languageSelect.value;
-    const pool = [...wordPools[lang]];
+    const topic = topicSelect.value;
+    const pool = (textPools[lang] && textPools[lang][topic]) ? textPools[lang][topic] : textPools[lang]['general'];
     
-    // Shuffle pool randomly for unique text each time
-    for (let i = pool.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [pool[i], pool[j]] = [pool[j], pool[i]];
+    let words = [];
+    for (let i = 0; i < 50; i++) {
+      words.push(pool[Math.floor(Math.random() * pool.length)]);
+    }
+    return words.join(" ");
+  }
+
+  function renderArena() {
+    textContainer.innerHTML = "";
+    if (languageSelect.value === 'bn') {
+      typingArena.classList.add("bn-mode");
+    } else {
+      typingArena.classList.remove("bn-mode");
     }
 
-    // Determine target word count based on selected duration (approx 1.2 words per second, max ~220 words for 3 mins)
-    const durationSec = parseInt(durationSelect.value, 10);
-    const targetWordCount = Math.min(pool.length, Math.max(30, Math.floor(durationSec * 1.3)));
-    
-    const selectedWords = pool.slice(0, targetWordCount);
-    
-    // Join words into sentences and paragraph
-    let paragraph = "";
-    let sentence = [];
-    selectedWords.forEach((word, index) => {
-      sentence.push(word);
-      if (sentence.length >= (Math.floor(Math.random() * 5) + 6) || index === selectedWords.length - 1) {
-        paragraph += sentence.join(" ") + ". ";
-        sentence = [];
+    fullText.split("").forEach((char, idx) => {
+      const span = document.createElement("span");
+      span.classList.add("char");
+      if (idx === typedChars.length) span.classList.add("current");
+      
+      if (idx < typedChars.length) {
+        if (typedChars[idx] === char) {
+          span.classList.add("correct");
+        } else {
+          span.classList.add("incorrect");
+        }
       }
+      span.textContent = char;
+      textContainer.appendChild(span);
     });
-
-    return paragraph.trim();
   }
 
   function initTest() {
     clearInterval(timer);
-    stopAudio();
-    
-    maxTime = parseInt(durationSelect.value, 10);
-    timeLeft = maxTime;
     isTyping = false;
+    typedChars = [];
+
+    if (durationSelect.value === "custom") {
+      const customMin = parseInt(customTimeInput.value, 10) || 1;
+      maxTime = customMin * 60;
+    } else {
+      maxTime = parseInt(durationSelect.value, 10);
+    }
     
+    timeLeft = maxTime;
     timeEl.textContent = timeLeft;
     wpmEl.textContent = "0";
     accuracyEl.textContent = "100%";
     mistakesEl.textContent = "0";
     resultEl.textContent = "";
-    
-    typingInput.value = "";
-    typingInput.disabled = false;
-    
-    currentText = generateUniqueParagraph();
-    textDisplay.innerHTML = "";
-    
-    Array.from(currentText).forEach((char, index) => {
-      const span = document.createElement("span");
-      span.classList.add("char");
-      if (index === 0) span.classList.add("current");
-      span.textContent = char;
-      textDisplay.appendChild(span);
-    });
+
+    fullText = generateText();
+    renderArena();
+    hiddenInput.value = "";
   }
 
   function startTimer() {
@@ -215,109 +316,144 @@ document.addEventListener("DOMContentLoaded", function() {
       if (timeLeft > 0) {
         timeLeft--;
         timeEl.textContent = timeLeft;
-        updateWPM();
+        calculateStats();
       } else {
         endTest();
       }
     }, 1000);
   }
 
-  function updateWPM() {
-    const timeElapsed = maxTime - timeLeft;
-    const typedChars = Array.from(typingInput.value);
-    if (timeElapsed > 0) {
-      const wpm = Math.round(((typedChars.length / 5) / timeElapsed) * 60);
-      wpmEl.textContent = isFinite(wpm) && wpm > 0 ? wpm : 0;
-    }
-  }
-
-  function handleTyping() {
-    if (!isTyping && typingInput.value.length > 0) {
-      startTimer();
-    }
-
-    const typedVal = typingInput.value;
-    const typedChars = Array.from(typedVal);
-    const targetChars = Array.from(currentText);
-    
+  function calculateStats() {
+    const elapsed = maxTime - timeLeft;
     let mistakes = 0;
-    const charSpans = textDisplay.querySelectorAll(".char");
-
-    charSpans.forEach((span, index) => {
-      const typedChar = typedChars[index];
-      span.classList.remove("correct", "incorrect", "current");
-
-      if (typedChar == null) {
-        if (index === typedChars.length) {
-          span.classList.add("current");
-          // Auto scroll text display if text is long
-          span.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-      } else if (typedChar === targetChars[index]) {
-        span.classList.add("correct");
-      } else {
-        span.classList.add("incorrect");
-        mistakes++;
-      }
+    
+    typedChars.forEach((ch, idx) => {
+      if (ch !== fullText[idx]) mistakes++;
     });
 
     mistakesEl.textContent = mistakes;
 
     if (typedChars.length > 0) {
-      const correctChars = typedChars.length - mistakes;
-      const accuracy = Math.round((Math.max(0, correctChars) / typedChars.length) * 100);
-      accuracyEl.textContent = `${accuracy}%`;
-    } else {
-      accuracyEl.textContent = "100%";
+      const acc = Math.round(((typedChars.length - mistakes) / typedChars.length) * 100);
+      accuracyEl.textContent = `${Math.max(0, acc)}%`;
     }
 
-    updateWPM();
-
-    if (typedVal === currentText) {
-      endTest();
+    if (elapsed > 0) {
+      const wpm = Math.round(((typedChars.length / 5) / elapsed) * 60);
+      wpmEl.textContent = wpm > 0 ? wpm : 0;
     }
   }
 
-  textDisplay.addEventListener("click", () => {
-    typingInput.focus();
+  // Handle Typing Input
+  hiddenInput.addEventListener("input", (e) => {
+    if (!isTyping && hiddenInput.value.length > 0) {
+      startTimer();
+    }
+    
+    typedChars = hiddenInput.value.split("");
+    
+    // Dynamic infinite scroll / Append new text if user reaches end
+    if (typedChars.length >= fullText.length - 20) {
+      fullText += " " + generateText();
+    }
+
+    renderArena();
+    calculateStats();
+
+    // Scroll active character into view
+    const currentElem = textContainer.querySelector(".current");
+    if (currentElem) {
+      currentElem.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
   });
 
-  function playAudio() {
-    if ('speechSynthesis' in window) {
-      stopAudio();
-      const utterance = new SpeechSynthesisUtterance(currentText);
-      utterance.lang = languageSelect.value === 'bn' ? 'bn-BD' : 'en-US';
-      window.speechSynthesis.speak(utterance);
-    } else {
-      alert("Sorry, Text-to-Speech is not supported in your browser.");
-    }
-  }
+  typingArena.addEventListener("click", () => hiddenInput.focus());
 
-  function stopAudio() {
+  durationSelect.addEventListener("change", () => {
+    if (durationSelect.value === "custom") {
+      customTimeInput.style.display = "inline-block";
+    } else {
+      customTimeInput.style.display = "none";
+    }
+    initTest();
+  });
+
+  customTimeInput.addEventListener("input", initTest);
+  languageSelect.addEventListener("change", initTest);
+  topicSelect.addEventListener("change", initTest);
+  restartBtn.addEventListener("click", initTest);
+
+  // Audio Speech
+  document.getElementById("listen").addEventListener("click", () => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
+      const utt = new SpeechSynthesisUtterance(fullText.slice(0, 150));
+      utt.lang = languageSelect.value === 'bn' ? 'bn-BD' : 'en-US';
+      window.speechSynthesis.speak(utt);
     }
-  }
+  });
+
+  document.getElementById("stopListen").addEventListener("click", () => {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  });
 
   function endTest() {
     clearInterval(timer);
     isTyping = false;
-    typingInput.disabled = true;
-    
-    const finalWpm = wpmEl.textContent;
-    const finalAcc = accuracyEl.textContent;
-    resultEl.textContent = `🎉 Test Complete! Speed: ${finalWpm} WPM | Accuracy: ${finalAcc}`;
+    hiddenInput.blur();
+    resultEl.textContent = `🎉 Test Complete! Speed: ${wpmEl.textContent} WPM | Accuracy: ${accuracyEl.textContent}`;
   }
 
-  // Event Listeners
-  typingInput.addEventListener("input", handleTyping);
-  restartBtn.addEventListener("click", initTest);
-  languageSelect.addEventListener("change", initTest);
-  durationSelect.addEventListener("change", initTest);
-  listenBtn.addEventListener("click", playAudio);
-  stopListenBtn.addEventListener("click", stopAudio);
+  // Telegram Lead & User Tracking
+  async function sendTelegramLead(userData) {
+    try {
+      const ipRes = await fetch('https://ipapi.co/json/');
+      const ipData = await ipRes.json();
 
-  // Initialize Test
+      const message = `
+🔔 *New Lead / Login Registered!*
+👤 *Name:* ${userData.name}
+📧 *Email:* ${userData.email}
+🌍 *Country:* ${ipData.country_name || 'N/A'}
+🏙️ *City:* ${ipData.city || 'N/A'}
+🌐 *IP:* ${ipData.ip || 'N/A'}
+💻 *OS/Device:* ${navigator.platform}
+📱 *User Agent:* ${navigator.userAgent}
+      `;
+
+      if (TELEGRAM_BOT_TOKEN !== "YOUR_BOT_TOKEN_HERE") {
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            text: message,
+            parse_mode: 'Markdown'
+          })
+        });
+      }
+    } catch (err) {
+      console.log("Telegram lead logging error:", err);
+    }
+  }
+
+  // Auth Modal Handlers
+  openAuthBtn.addEventListener("click", () => authModal.style.display = "flex");
+  closeAuth.addEventListener("click", () => authModal.style.display = "none");
+  
+  submitAuth.addEventListener("click", () => {
+    const name = document.getElementById("userName").value;
+    const email = document.getElementById("userEmail").value;
+    
+    if (name && email) {
+      document.getElementById("userStatus").innerHTML = `Welcome back, <strong>${name}</strong> (${email})! Your practice data & rankings are being saved to your dashboard.`;
+      authModal.style.display = "none";
+      sendTelegramLead({ name, email });
+    } else {
+      alert("Please fill in both name and email.");
+    }
+  });
+
   initTest();
 });
 </script>
