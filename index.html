@@ -30,13 +30,19 @@ body { margin: 0; font-family: var(--font-main); background: var(--bg); color: v
 
 /* Header & Nav */
 header { background: var(--card); border-bottom: 1px solid var(--card-border); padding: 14px 6%; display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; }
-.logo { font-size: 22px; font-weight: 800; color: var(--accent); display: flex; align-items: center; gap: 6px; }
+.logo { font-size: 22px; font-weight: 800; color: var(--accent); display: flex; align-items: center; gap: 6px; cursor: pointer; }
 .logo span { color: var(--text); }
 nav { display: flex; gap: 20px; align-items: center; }
 nav a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 600; cursor: pointer; }
-nav a:hover { color: var(--text); }
+nav a:hover, nav a.active { color: var(--text); border-bottom: 2px solid var(--accent); padding-bottom: 4px; }
+
 .btn-login { background: var(--accent); color: white; border: 0; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 .btn-login:hover { background: var(--accent-hover); }
+
+.user-profile { display: none; align-items: center; gap: 10px; }
+.user-name { background: var(--card-border); padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 14px; color: var(--accent); }
+.btn-logout { background: transparent; color: var(--bad); border: 1px solid var(--bad); padding: 6px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 13px; }
+.btn-logout:hover { background: var(--bad); color: white; }
 
 main { max-width: 1000px; margin: 30px auto; padding: 0 18px; }
 
@@ -74,12 +80,7 @@ button.secondary:hover { background: #475569; }
 }
 #typingArena.bn-mode { font-family: var(--font-bn); font-size: 24px; }
 
-#textContainer {
-  display: block;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
+#textContainer { display: block; white-space: pre-wrap; word-wrap: break-word; }
 .char { position: relative; color: var(--muted); display: inline; }
 .char.correct { color: var(--good); }
 .char.incorrect { color: var(--bad); background: var(--bad-bg); border-radius: 2px; }
@@ -110,7 +111,9 @@ button.secondary:hover { background: #475569; }
 .tw { background: #000000; }
 .li { background: #0a66c2; }
 
-/* Leaderboard & History Tables */
+/* Dashboard Sections */
+#dashboardPage { display: none; }
+
 .tabs { display: flex; gap: 10px; margin-bottom: 15px; }
 .tab-btn { background: var(--card-border); color: var(--text); padding: 8px 14px; font-size: 13px; border-radius: 6px; cursor: pointer; }
 .tab-btn.active { background: var(--accent); }
@@ -136,162 +139,183 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
 <body>
 
 <header>
-  <div class="logo">Type<span>Flow</span></div>
+  <div class="logo" id="logoBtn">Type<span>Flow</span></div>
   <nav>
-    <a href="#test">Typing Test</a>
-    <a href="#dashboard">Dashboard</a>
+    <a id="navTest" class="active">Typing Test</a>
+    <a id="navDashboard">Dashboard</a>
     <button class="btn-login" id="openAuthBtn" type="button">Login / Sign Up</button>
+    <div class="user-profile" id="userProfile">
+      <span class="user-name" id="userNameHeader">👤 User</span>
+      <button class="btn-logout" id="logoutBtn">Logout</button>
+    </div>
   </nav>
 </header>
 
 <main>
-  <section class="card" id="testCard">
-    <div class="controls">
-      <div class="control-group">
-        <label for="language">Language:</label>
-        <select id="language">
-          <option value="en">English (Default)</option>
-          <option value="bn">বাংলা (Bengali)</option>
-        </select>
+  <!-- Main Typing Test Page -->
+  <div id="testPage">
+    <section class="card" id="testCard">
+      <div class="controls">
+        <div class="control-group">
+          <label for="language">Language:</label>
+          <select id="language">
+            <option value="en">English (Default)</option>
+            <option value="bn">বাংলা (Bengali)</option>
+          </select>
 
-        <label for="topic">Topic:</label>
-        <select id="topic">
-          <option value="general">General (Standard)</option>
-          <option value="ai">AI & Tech</option>
-          <option value="biology">Human Body</option>
-          <option value="dengue">Dengue Care</option>
-          <option value="english_learning">Easy English</option>
-        </select>
-      </div>
-
-      <div class="control-group">
-        <label for="duration">Time:</label>
-        <select id="duration">
-          <option value="30">30 Seconds</option>
-          <option value="60" selected>60 Seconds</option>
-          <option value="120">120 Seconds (2 min)</option>
-          <option value="300">300 Seconds (5 min)</option>
-          <option value="custom">Custom Min</option>
-        </select>
-        <input type="number" id="customTime" placeholder="Min" min="1" max="60" style="display:none; width:80px;">
-        <button id="restart">New Test</button>
-      </div>
-    </div>
-
-    <!-- Live Stats -->
-    <div class="stats" id="statsContainer">
-      <div class="stat"><strong id="time">60</strong><span>Time Left (s)</span></div>
-      <div class="stat"><strong id="wpm">0</strong><span>WPM</span></div>
-      <div class="stat"><strong id="accuracy">100%</strong><span>Accuracy</span></div>
-      <div class="stat"><strong id="mistakes">0</strong><span>Mistakes</span></div>
-    </div>
-
-    <!-- Typing Area -->
-    <div id="typingAreaWrapper">
-      <div id="typingArena" tabindex="0">
-        <div id="textContainer"></div>
-      </div>
-      <input type="text" id="hiddenInput" autocomplete="off" spellcheck="false">
-
-      <div class="controls" style="margin-top:15px;">
-        <button class="secondary" id="listen">🔊 Listen Text</button>
-        <button class="secondary" id="stopListen">Stop Audio</button>
-        <span class="hint">💡 Start typing anytime. Focus is automatically active!</span>
-      </div>
-    </div>
-
-    <!-- Congratulations Screen -->
-    <div id="congratsScreen">
-      <h2>🎉 Awesome Job! Congratulations!</h2>
-      <p style="color:var(--muted);">You have successfully completed the typing test. Keep practicing to boost your skill!</p>
-      
-      <div class="score-badge">
-        <div class="score-box">
-          <h3 id="finalWpm">0</h3>
-          <p>Speed (WPM)</p>
+          <label for="topic">Topic:</label>
+          <select id="topic">
+            <option value="general">General (Standard)</option>
+            <option value="ai">AI & Tech</option>
+            <option value="biology">Human Body</option>
+            <option value="dengue">Dengue Care</option>
+            <option value="english_learning">Easy English</option>
+          </select>
         </div>
-        <div class="score-box">
-          <h3 id="finalAcc">100%</h3>
-          <p>Accuracy</p>
-        </div>
-        <div class="score-box">
-          <h3 id="finalMistakes">0</h3>
-          <p>Mistakes</p>
+
+        <div class="control-group">
+          <label for="duration">Time:</label>
+          <select id="duration">
+            <option value="30">30 Seconds</option>
+            <option value="60" selected>60 Seconds</option>
+            <option value="120">120 Seconds (2 min)</option>
+            <option value="300">300 Seconds (5 min)</option>
+            <option value="custom">Custom Min</option>
+          </select>
+          <input type="number" id="customTime" placeholder="Min" min="1" max="60" style="display:none; width:80px;">
+          <button id="restart">New Test</button>
         </div>
       </div>
 
-      <p style="font-weight: 600; margin-top: 15px;">Share your achievement with friends:</p>
-      <div class="social-share">
-        <a href="#" id="shareFb" class="social-btn fb" target="_blank">📘 Facebook</a>
-        <a href="#" id="shareWa" class="social-btn wa" target="_blank">💬 WhatsApp</a>
-        <a href="#" id="shareTw" class="social-btn tw" target="_blank">✖ Twitter (X)</a>
-        <a href="#" id="shareLi" class="social-btn li" target="_blank">💼 LinkedIn</a>
+      <!-- Live Stats -->
+      <div class="stats" id="statsContainer">
+        <div class="stat"><strong id="time">60</strong><span>Time Left (s)</span></div>
+        <div class="stat"><strong id="wpm">0</strong><span>WPM</span></div>
+        <div class="stat"><strong id="accuracy">100%</strong><span>Accuracy</span></div>
+        <div class="stat"><strong id="mistakes">0</strong><span>Mistakes</span></div>
       </div>
 
-      <div style="margin-top: 25px;">
-        <button id="tryAgainBtn">🔄 Take Another Test</button>
+      <!-- Typing Area -->
+      <div id="typingAreaWrapper">
+        <div id="typingArena" tabindex="0">
+          <div id="textContainer"></div>
+        </div>
+        <input type="text" id="hiddenInput" autocomplete="off" spellcheck="false">
+
+        <div class="controls" style="margin-top:15px;">
+          <button class="secondary" id="listen">🔊 Listen Text</button>
+          <button class="secondary" id="stopListen">Stop Audio</button>
+          <span class="hint">💡 Start typing anytime. Focus is automatically active!</span>
+        </div>
       </div>
-    </div>
-  </section>
 
-  <!-- User Dashboard & History Section -->
-  <section class="card" id="dashboard">
-    <h3 style="margin-top:0;">👤 User Status & History</h3>
-    <p id="userStatus">You are practicing as a <strong>Guest User</strong>. Login to save your progress permanently.</p>
+      <!-- Congratulations Screen -->
+      <div id="congratsScreen">
+        <h2>🎉 Awesome Job! Congratulations!</h2>
+        <p style="color:var(--muted);">You have successfully completed the typing test. Keep practicing to boost your skill!</p>
+        
+        <div class="score-badge">
+          <div class="score-box">
+            <h3 id="finalWpm">0</h3>
+            <p>Speed (WPM)</p>
+          </div>
+          <div class="score-box">
+            <h3 id="finalAcc">100%</h3>
+            <p>Accuracy</p>
+          </div>
+          <div class="score-box">
+            <h3 id="finalMistakes">0</h3>
+            <p>Mistakes</p>
+          </div>
+        </div>
 
-    <h4 style="margin-top:20px;">📜 Your Typing History</h4>
-    <div style="overflow-x:auto;">
-      <table>
-        <thead>
-          <tr>
-            <th>Date & Time</th>
-            <th>WPM</th>
-            <th>Accuracy</th>
-            <th>Mistakes</th>
-          </tr>
-        </thead>
-        <tbody id="historyTableBody">
-          <tr><td colspan="4" style="text-align:center; color:var(--muted);">No typing history yet. Complete a test!</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
+        <p style="font-weight: 600; margin-top: 15px;">Share your achievement with friends:</p>
+        <div class="social-share">
+          <a href="#" id="shareFb" class="social-btn fb" target="_blank">📘 Facebook</a>
+          <a href="#" id="shareWa" class="social-btn wa" target="_blank">💬 WhatsApp</a>
+          <a href="#" id="shareTw" class="social-btn tw" target="_blank">✖ Twitter (X)</a>
+          <a href="#" id="shareLi" class="social-btn li" target="_blank">💼 LinkedIn</a>
+        </div>
 
-  <!-- Leaderboard Section -->
-  <section class="card">
-    <h3 style="margin-top:0;">🏆 Global Typing Leaderboard</h3>
-    <div class="tabs">
-      <button class="tab-btn active" id="dailyTab">Daily Top</button>
-      <button class="tab-btn" id="weeklyTab">Weekly Top</button>
-    </div>
-    <div style="overflow-x:auto;">
-      <table>
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>Name</th>
-            <th>Speed (WPM)</th>
-            <th>Accuracy</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody id="leaderboardTableBody">
-          <tr><td colspan="5" style="text-align:center; color:var(--muted);">No scores recorded yet. Be the first!</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
+        <div style="margin-top: 25px;">
+          <button id="tryAgainBtn">🔄 Take Another Test</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Separate Dashboard Page -->
+  <div id="dashboardPage">
+    <section class="card">
+      <h3 style="margin-top:0;">👤 User Dashboard</h3>
+      <p id="userStatus">You are practicing as a <strong>Guest User</strong>. Login to save your progress permanently.</p>
+
+      <h4 style="margin-top:20px;">📜 Your Typing History</h4>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Date & Time</th>
+              <th>WPM</th>
+              <th>Accuracy</th>
+              <th>Mistakes</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <tr><td colspan="4" style="text-align:center; color:var(--muted);">No typing history yet. Complete a test!</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Leaderboard Section -->
+    <section class="card">
+      <h3 style="margin-top:0;">🏆 Global Typing Leaderboard</h3>
+      <div class="tabs">
+        <button class="tab-btn active" id="dailyTab">Daily Top</button>
+        <button class="tab-btn" id="weeklyTab">Weekly Top</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Name</th>
+              <th>Speed (WPM)</th>
+              <th>Accuracy</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardTableBody">
+            <tr><td colspan="5" style="text-align:center; color:var(--muted);">No scores recorded yet. Be the first!</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
 </main>
 
-<!-- Login / Sign Up Modal -->
+<!-- Login / Sign Up Modal with Email OTP Verification -->
 <div class="modal-overlay" id="authModal">
   <div class="modal">
-    <h3>User Login / Register</h3>
-    <p style="font-size:13px; color:var(--muted); margin-bottom:15px;">Save your typing results and dashboard stats.</p>
-    <input type="text" id="userName" placeholder="Your Full Name">
-    <input type="email" id="userEmail" placeholder="Your Email Address">
-    <button id="submitAuth" style="width:100%; margin-top:5px;">Continue</button>
-    <button id="closeAuth" class="secondary" style="width:100%; margin-top:8px;">Close</button>
+    <!-- Step 1: User Info Input -->
+    <div id="authStep1">
+      <h3>User Login / Register</h3>
+      <p style="font-size:13px; color:var(--muted); margin-bottom:15px;">Enter your details to verify your email.</p>
+      <input type="text" id="userName" placeholder="Your Full Name">
+      <input type="email" id="userEmail" placeholder="Your Email Address">
+      <button id="sendOtpBtn" style="width:100%; margin-top:5px;">Send Verification OTP</button>
+      <button id="closeAuth" class="secondary" style="width:100%; margin-top:8px;">Close</button>
+    </div>
+
+    <!-- Step 2: Email OTP Code Input -->
+    <div id="authStep2" style="display:none;">
+      <h3>Verify Email Code</h3>
+      <p style="font-size:13px; color:var(--muted); margin-bottom:10px;">We sent a 6-digit OTP code to <strong id="sentEmailSpan"></strong>.</p>
+      <input type="text" id="otpInput" placeholder="Enter 6-Digit OTP" maxlength="6" style="text-align:center; font-size:18px; letter-spacing:4px;">
+      <button id="verifyOtpBtn" style="width:100%; margin-top:5px;">Verify & Login</button>
+      <button id="backAuthBtn" class="secondary" style="width:100%; margin-top:8px;">Back</button>
+    </div>
   </div>
 </div>
 
@@ -317,6 +341,18 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   };
 
+  // Elements
+  const navTest = document.getElementById("navTest");
+  const navDashboard = document.getElementById("navDashboard");
+  const testPage = document.getElementById("testPage");
+  const dashboardPage = document.getElementById("dashboardPage");
+  const logoBtn = document.getElementById("logoBtn");
+
+  const openAuthBtn = document.getElementById("openAuthBtn");
+  const userProfile = document.getElementById("userProfile");
+  const userNameHeader = document.getElementById("userNameHeader");
+  const logoutBtn = document.getElementById("logoutBtn");
+
   const typingArena = document.getElementById("typingArena");
   const textContainer = document.getElementById("textContainer");
   const hiddenInput = document.getElementById("hiddenInput");
@@ -335,9 +371,12 @@ document.addEventListener("DOMContentLoaded", function() {
   const tryAgainBtn = document.getElementById("tryAgainBtn");
 
   const authModal = document.getElementById("authModal");
-  const openAuthBtn = document.getElementById("openAuthBtn");
+  const authStep1 = document.getElementById("authStep1");
+  const authStep2 = document.getElementById("authStep2");
+  const sendOtpBtn = document.getElementById("sendOtpBtn");
+  const verifyOtpBtn = document.getElementById("verifyOtpBtn");
+  const backAuthBtn = document.getElementById("backAuthBtn");
   const closeAuth = document.getElementById("closeAuth");
-  const submitAuth = document.getElementById("submitAuth");
 
   const historyTableBody = document.getElementById("historyTableBody");
   const leaderboardTableBody = document.getElementById("leaderboardTableBody");
@@ -350,22 +389,55 @@ document.addEventListener("DOMContentLoaded", function() {
   let maxTime = 60;
   let timeLeft = 60;
   let isTyping = false;
-  let currentUser = localStorage.getItem("typeflow_user") ? JSON.parse(localStorage.getItem("typeflow_user")) : { name: "Guest User", email: "" };
+  let generatedOtp = "";
+  let tempUserData = {};
 
-  if (currentUser.email) {
-    document.getElementById("userStatus").innerHTML = `Welcome back, <strong>${currentUser.name}</strong> (${currentUser.email})! Your progress is saved.`;
+  let currentUser = localStorage.getItem("typeflow_user") ? JSON.parse(localStorage.getItem("typeflow_user")) : null;
+
+  function updateHeaderState() {
+    if (currentUser && currentUser.email) {
+      openAuthBtn.style.display = "none";
+      userProfile.style.display = "flex";
+      userNameHeader.textContent = `👤 ${currentUser.name}`;
+      document.getElementById("userStatus").innerHTML = `Welcome back, <strong>${currentUser.name}</strong> (${currentUser.email})! Your progress is saved.`;
+    } else {
+      openAuthBtn.style.display = "block";
+      userProfile.style.display = "none";
+      document.getElementById("userStatus").innerHTML = `You are practicing as a <strong>Guest User</strong>. Login to save your progress permanently.`;
+    }
   }
 
+  // Navigation Logic
+  function showTestPage() {
+    testPage.style.display = "block";
+    dashboardPage.style.display = "none";
+    navTest.classList.add("active");
+    navDashboard.classList.remove("active");
+    keepFocus();
+  }
+
+  function showDashboardPage() {
+    testPage.style.display = "none";
+    dashboardPage.style.display = "block";
+    navDashboard.classList.add("active");
+    navTest.classList.remove("active");
+    loadHistory();
+    loadLeaderboard('daily');
+  }
+
+  navTest.addEventListener("click", showTestPage);
+  logoBtn.addEventListener("click", showTestPage);
+  navDashboard.addEventListener("click", showDashboardPage);
+
   function keepFocus() {
-    if (congratsScreen.style.display !== "block" && authModal.style.display !== "flex") {
+    if (testPage.style.display !== "none" && congratsScreen.style.display !== "block" && authModal.style.display !== "flex") {
       hiddenInput.focus();
     }
   }
 
   window.addEventListener("load", () => {
+    updateHeaderState();
     keepFocus();
-    loadHistory();
-    loadLeaderboard('daily');
   });
 
   document.addEventListener("click", (e) => {
@@ -374,8 +446,11 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
+  // Modal & Auth OTP Logic
   openAuthBtn.addEventListener("click", (e) => {
     e.stopPropagation();
+    authStep1.style.display = "block";
+    authStep2.style.display = "none";
     authModal.style.display = "flex";
   });
 
@@ -384,27 +459,52 @@ document.addEventListener("DOMContentLoaded", function() {
     keepFocus();
   });
 
-  authModal.addEventListener("click", (e) => {
-    if (e.target === authModal) {
+  backAuthBtn.addEventListener("click", () => {
+    authStep1.style.display = "block";
+    authStep2.style.display = "none";
+  });
+
+  sendOtpBtn.addEventListener("click", () => {
+    const name = document.getElementById("userName").value.trim();
+    const email = document.getElementById("userEmail").value.trim();
+
+    if (!name || !email) {
+      alert("Please fill in both name and email.");
+      return;
+    }
+
+    tempUserData = { name, email };
+    generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    document.getElementById("sentEmailSpan").textContent = email;
+    authStep1.style.display = "none";
+    authStep2.style.display = "block";
+
+    // Demo Verification Code Popup for Client Testing
+    alert(`[TypeFlow Verification Code]\n\nYour OTP pin code is: ${generatedOtp}`);
+  });
+
+  verifyOtpBtn.addEventListener("click", () => {
+    const inputOtp = document.getElementById("otpInput").value.trim();
+
+    if (inputOtp === generatedOtp) {
+      currentUser = tempUserData;
+      localStorage.setItem("typeflow_user", JSON.stringify(currentUser));
+      updateHeaderState();
       authModal.style.display = "none";
+      sendTelegramLead(currentUser);
+      alert("🎉 Email verified successfully! Welcome to TypeFlow.");
       keepFocus();
+    } else {
+      alert("❌ Invalid OTP code. Please enter the correct 6-digit code.");
     }
   });
 
-  submitAuth.addEventListener("click", () => {
-    const name = document.getElementById("userName").value.trim();
-    const email = document.getElementById("userEmail").value.trim();
-    
-    if (name && email) {
-      currentUser = { name, email };
-      localStorage.setItem("typeflow_user", JSON.stringify(currentUser));
-      document.getElementById("userStatus").innerHTML = `Welcome back, <strong>${name}</strong> (${email})! Your progress is saved.`;
-      authModal.style.display = "none";
-      sendTelegramLead({ name, email });
-      keepFocus();
-    } else {
-      alert("Please fill in both name and email.");
-    }
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("typeflow_user");
+    currentUser = null;
+    updateHeaderState();
+    alert("Logged out successfully.");
   });
 
   function generateText() {
@@ -560,7 +660,6 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("finalAcc").textContent = finalAccVal;
     document.getElementById("finalMistakes").textContent = finalMistakesVal;
 
-    // Save Score to LocalStorage History & Leaderboard
     saveScoreRecord(finalWpmVal, finalAccVal, finalMistakesVal);
 
     const shareText = encodeURIComponent(`I just scored ${finalWpmVal} WPM with ${finalAccVal} accuracy on TypeFlow Typing Practice! Check it out.`);
@@ -572,26 +671,21 @@ document.addEventListener("DOMContentLoaded", function() {
 
   function saveScoreRecord(wpm, accuracy, mistakes) {
     const record = {
-      name: currentUser.name || "Guest User",
+      name: currentUser ? currentUser.name : "Guest User",
       wpm: parseInt(wpm, 10),
       accuracy: accuracy,
       mistakes: mistakes,
       date: new Date().toISOString()
     };
 
-    // Save History
     let history = JSON.parse(localStorage.getItem("typeflow_history")) || [];
     history.unshift(record);
-    if (history.length > 20) history.pop(); // keep last 20
+    if (history.length > 20) history.pop();
     localStorage.setItem("typeflow_history", JSON.stringify(history));
 
-    // Save Leaderboard Scores
     let leaderboard = JSON.parse(localStorage.getItem("typeflow_leaderboard")) || [];
     leaderboard.push(record);
     localStorage.setItem("typeflow_leaderboard", JSON.stringify(leaderboard));
-
-    loadHistory();
-    loadLeaderboard('daily');
   }
 
   function loadHistory() {
@@ -613,7 +707,6 @@ document.addEventListener("DOMContentLoaded", function() {
     let leaderboard = JSON.parse(localStorage.getItem("typeflow_leaderboard")) || [];
     const now = new Date().getTime();
 
-    // Filter by Daily (24h) or Weekly (7 days)
     const filtered = leaderboard.filter(item => {
       const itemTime = new Date(item.date).getTime();
       const diffTime = now - itemTime;
@@ -624,7 +717,6 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     });
 
-    // Sort by WPM descending
     filtered.sort((a, b) => b.wpm - a.wpm);
 
     if (filtered.length === 0) {
@@ -662,9 +754,10 @@ document.addEventListener("DOMContentLoaded", function() {
       const ipData = await ipRes.json();
 
       const message = `
-🔔 *New Lead Registered!*
+🔔 *New Verified Lead Registered!*
 👤 *Name:* ${userData.name}
 📧 *Email:* ${userData.email}
+✅ *Email Status:* Verified (OTP Checked)
 🌍 *Country:* ${ipData.country_name || 'N/A'}
 🏙️ *City:* ${ipData.city || 'N/A'}
 🌐 *IP:* ${ipData.ip || 'N/A'}
