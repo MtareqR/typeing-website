@@ -65,17 +65,23 @@ button.secondary:hover { background: #475569; }
   border-radius: 12px;
   padding: 24px;
   min-height: 140px;
-  max-height: 170px;
-  overflow: hidden;
+  max-height: 180px;
+  overflow-y: auto;
   font-size: 22px;
   line-height: 2;
   cursor: text;
   font-family: var(--font-mono);
 }
 #typingArena.bn-mode { font-family: var(--font-bn); font-size: 24px; }
-#textContainer { display: flex; flex-wrap: wrap; white-space: pre-wrap; word-break: break-word; }
 
-.char { position: relative; color: var(--muted); }
+/* Fixed Word Wrapping Bug (No breaking words halfway across lines) */
+#textContainer {
+  display: block;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.char { position: relative; color: var(--muted); display: inline; }
 .char.correct { color: var(--good); }
 .char.incorrect { color: var(--bad); background: var(--bad-bg); border-radius: 2px; }
 .char.current::before {
@@ -244,11 +250,9 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  // Placeholder credentials for security (replace with your secure backend integration if needed later)
   const TELEGRAM_BOT_TOKEN = "YOUR_BOT_TOKEN_HERE";
   const TELEGRAM_CHAT_ID = "YOUR_CHAT_ID_HERE";
 
-  // Standard, simple and easy word pools
   const textPools = {
     en: {
       general: ["the", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog", "learning", "to", "type", "is", "fun", "and", "very", "useful", "practice", "every", "day", "to", "build", "speed", "focus", "on", "accuracy", "and", "stay", "calm", "while", "writing", "words", "correctly"],
@@ -293,7 +297,6 @@ document.addEventListener("DOMContentLoaded", function() {
   let timeLeft = 60;
   let isTyping = false;
 
-  // Auto focus helper so typing starts instantly
   function keepFocus() {
     if (congratsScreen.style.display !== "block" && authModal.style.display !== "flex") {
       hiddenInput.focus();
@@ -443,7 +446,6 @@ document.addEventListener("DOMContentLoaded", function() {
   restartBtn.addEventListener("click", initTest);
   tryAgainBtn.addEventListener("click", initTest);
 
-  // Audio Speech
   document.getElementById("listen").addEventListener("click", () => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
@@ -483,7 +485,6 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("shareLi").href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`;
   }
 
-  // Telegram Lead Tracking (Placeholder tokens)
   async function sendTelegramLead(userData) {
     if (TELEGRAM_BOT_TOKEN === "YOUR_BOT_TOKEN_HERE" || TELEGRAM_CHAT_ID === "YOUR_CHAT_ID_HERE") {
       console.log("Telegram token/chat_id not configured.");
