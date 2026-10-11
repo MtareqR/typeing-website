@@ -32,15 +32,14 @@ button:disabled {opacity:.5;cursor:not-allowed}
 .stat {background:#f8f9ff;border:1px solid var(--border);padding:15px 10px;border-radius:12px;text-align:center}
 .stat strong {display:block;font-size:26px;color:var(--accent)}
 .stat span {font-size:12px;color:var(--muted)}
-#textDisplay {background:#fafbff;border:1px solid var(--border);border-radius:12px;padding:20px;min-height:130px;font-size:21px;line-height:1.9;overflow-wrap:anywhere}
+#textDisplay {background:#fafbff;border:1px solid var(--border);border-radius:12px;padding:20px;min-height:130px;font-size:21px;line-height:1.9;overflow-wrap:anywhere;user-select:none}
 .char.correct {color:var(--good)}
 .char.incorrect {color:var(--bad);background:#ffe7e7;border-radius:3px}
-.char.current {border-left:2px solid var(--accent);animation:blink 1s infinite}
-@keyframes blink { 50% { border-color: transparent; } }
+.char.current {border-left:2px solid var(--accent);background:#e0e0ff}
 #typingInput {width:100%;min-height:115px;padding:15px;margin-top:14px;border:1px solid var(--border);resize:vertical;outline:none;background:white;color:var(--text)}
 #typingInput:focus {border-color:var(--accent);box-shadow:0 0 0 3px #6558e81a}
 .hint {font-size:13px;color:var(--muted)}
-.result {font-weight:700;margin-top:15px;min-height:26px}
+.result {font-weight:700;margin-top:15px;min-height:26px;color:var(--accent)}
 .section-title {font-size:20px;margin:0 0 12px}
 footer {text-align:center;padding:28px;color:var(--muted);font-size:13px}
 @media(max-width:560px){
@@ -120,180 +119,179 @@ footer {text-align:center;padding:28px;color:var(--muted);font-size:13px}
 <footer>Free Typing Practice · Built for learners everywhere</footer>
 
 <script>
-const passages = {
-  en: [
-    "Learning a new skill takes time and practice. Start slowly, focus on accuracy, and try to improve a little every day.",
-    "Technology helps people learn new things from anywhere in the world. A little practice every day can make a big difference.",
-    "Good typing skills help you study, work, write emails, and communicate more easily. Keep practicing and celebrate your progress."
-  ],
-  bn: [
-    "নিয়মিত অনুশীলন করলে টাইপিংয়ের গতি এবং নির্ভুলতা ধীরে ধীরে বাড়ে। প্রথমে সঠিকভাবে টাইপ করার চেষ্টা করো।",
-    "প্রযুক্তি আমাদের নতুন কিছু শেখার সুযোগ করে দেয়। প্রতিদিনের কিছুটা সময় অনুশীলন আপনাকে দ্রুত টাইপ করতে সাহায্য করবে।",
-    "কীবোর্ডের দিকে না তাকিয়ে স্ক্রিনের দিকে তাকিয়ে টাইপ করার চেষ্টা করুন। এতে মনোযোগ ও গতি দুটোই বৃদ্ধি পায়।"
-  ]
-};
+document.addEventListener("DOMContentLoaded", function() {
+  const passages = {
+    en: [
+      "Learning a new skill takes time and practice. Start slowly, focus on accuracy, and try to improve a little every day.",
+      "Technology helps people learn new things from anywhere in the world. A little practice every day can make a big difference.",
+      "Good typing skills help you study, work, write emails, and communicate more easily. Keep practicing and celebrate your progress."
+    ],
+    bn: [
+      "নিয়মিত অনুশীলন করলে টাইপিংয়ের গতি এবং নির্ভুলতা ধীরে ধীরে বাড়ে। প্রথমে সঠিকভাবে টাইপ করার চেষ্টা করো।",
+      "প্রযুক্তি আমাদের নতুন কিছু শেখার সুযোগ করে দেয়। প্রতিদিনের কিছুটা সময় অনুশীলন আপনাকে দ্রুত টাইপ করতে সাহায্য করবে।",
+      "কীবোর্ডের দিকে না তাকিয়ে স্ক্রিনের দিকে তাকিয়ে টাইপ করার চেষ্টা করুন। এতে মনোযোগ ও গতি দুটোই বৃদ্ধি পায়।"
+    ]
+  };
 
-const textDisplay = document.getElementById("textDisplay");
-const typingInput = document.getElementById("typingInput");
-const timeEl = document.getElementById("time");
-const wpmEl = document.getElementById("wpm");
-const accuracyEl = document.getElementById("accuracy");
-const mistakesEl = document.getElementById("mistakes");
-const languageSelect = document.getElementById("language");
-const durationSelect = document.getElementById("duration");
-const restartBtn = document.getElementById("restart");
-const resultEl = document.getElementById("result");
-const listenBtn = document.getElementById("listen");
-const stopListenBtn = document.getElementById("stopListen");
+  const textDisplay = document.getElementById("textDisplay");
+  const typingInput = document.getElementById("typingInput");
+  const timeEl = document.getElementById("time");
+  const wpmEl = document.getElementById("wpm");
+  const accuracyEl = document.getElementById("accuracy");
+  const mistakesEl = document.getElementById("mistakes");
+  const languageSelect = document.getElementById("language");
+  const durationSelect = document.getElementById("duration");
+  const restartBtn = document.getElementById("restart");
+  const resultEl = document.getElementById("result");
+  const listenBtn = document.getElementById("listen");
+  const stopListenBtn = document.getElementById("stopListen");
 
-let currentText = "";
-let timer = null;
-let maxTime = 30;
-let timeLeft = 30;
-let isTyping = false;
-let totalTyped = 0;
+  let currentText = "";
+  let timer = null;
+  let maxTime = 30;
+  let timeLeft = 30;
+  let isTyping = false;
 
-function getRandomText() {
-  const lang = languageSelect.value;
-  const list = passages[lang];
-  return list[Math.floor(Math.random() * list.length)];
-}
+  function getRandomText() {
+    const lang = languageSelect.value;
+    const list = passages[lang];
+    return list[Math.floor(Math.random() * list.length)];
+  }
 
-function initTest() {
-  clearInterval(timer);
-  stopAudio();
-  
-  maxTime = parseInt(durationSelect.value, 10);
-  timeLeft = maxTime;
-  isTyping = false;
-  totalTyped = 0;
-  
-  timeEl.textContent = timeLeft;
-  wpmEl.textContent = "0";
-  accuracyEl.textContent = "100%";
-  mistakesEl.textContent = "0";
-  resultEl.textContent = "";
-  
-  typingInput.value = "";
-  typingInput.disabled = false;
-  
-  currentText = getRandomText();
-  textDisplay.innerHTML = "";
-  
-  Array.from(currentText).forEach((char, index) => {
-    const span = document.createElement("span");
-    span.classList.add("char");
-    if (index === 0) span.classList.add("current");
-    span.textContent = char;
-    textDisplay.appendChild(span);
-  });
-}
+  function initTest() {
+    clearInterval(timer);
+    stopAudio();
+    
+    maxTime = parseInt(durationSelect.value, 10);
+    timeLeft = maxTime;
+    isTyping = false;
+    
+    timeEl.textContent = timeLeft;
+    wpmEl.textContent = "0";
+    accuracyEl.textContent = "100%";
+    mistakesEl.textContent = "0";
+    resultEl.textContent = "";
+    
+    typingInput.value = "";
+    typingInput.disabled = false;
+    
+    currentText = getRandomText();
+    textDisplay.innerHTML = "";
+    
+    Array.from(currentText).forEach((char, index) => {
+      const span = document.createElement("span");
+      span.classList.add("char");
+      if (index === 0) span.classList.add("current");
+      span.textContent = char;
+      textDisplay.appendChild(span);
+    });
+  }
 
-function startTimer() {
-  isTyping = true;
-  timer = setInterval(() => {
-    if (timeLeft > 0) {
-      timeLeft--;
-      timeEl.textContent = timeLeft;
-      updateStats();
+  function startTimer() {
+    isTyping = true;
+    timer = setInterval(() => {
+      if (timeLeft > 0) {
+        timeLeft--;
+        timeEl.textContent = timeLeft;
+        updateWPM();
+      } else {
+        endTest();
+      }
+    }, 1000);
+  }
+
+  function updateWPM() {
+    const timeElapsed = maxTime - timeLeft;
+    const typedChars = Array.from(typingInput.value);
+    if (timeElapsed > 0) {
+      const wpm = Math.round(((typedChars.length / 5) / timeElapsed) * 60);
+      wpmEl.textContent = isFinite(wpm) && wpm > 0 ? wpm : 0;
+    }
+  }
+
+  function handleTyping() {
+    if (!isTyping && typingInput.value.length > 0) {
+      startTimer();
+    }
+
+    const typedVal = typingInput.value;
+    const typedChars = Array.from(typedVal);
+    const targetChars = Array.from(currentText);
+    
+    let mistakes = 0;
+    const charSpans = textDisplay.querySelectorAll(".char");
+
+    charSpans.forEach((span, index) => {
+      const typedChar = typedChars[index];
+      span.classList.remove("correct", "incorrect", "current");
+
+      if (typedChar == null) {
+        if (index === typedChars.length) {
+          span.classList.add("current");
+        }
+      } else if (typedChar === targetChars[index]) {
+        span.classList.add("correct");
+      } else {
+        span.classList.add("incorrect");
+        mistakes++;
+      }
+    });
+
+    mistakesEl.textContent = mistakes;
+
+    if (typedChars.length > 0) {
+      const correctChars = typedChars.length - mistakes;
+      const accuracy = Math.round((Math.max(0, correctChars) / typedChars.length) * 100);
+      accuracyEl.textContent = `${accuracy}%`;
     } else {
+      accuracyEl.textContent = "100%";
+    }
+
+    updateWPM();
+
+    if (typedVal === currentText) {
       endTest();
     }
-  }, 1000);
-}
+  }
 
-function updateStats() {
-  const typedVal = typingInput.value;
-  const typedChars = Array.from(typedVal);
-  const targetChars = Array.from(currentText);
-  
-  let mistakes = 0;
-  const charSpans = textDisplay.querySelectorAll(".char");
+  function endTest() {
+    clearInterval(timer);
+    isTyping = false;
+    typingInput.disabled = true;
+    
+    const finalWpm = wpmEl.textContent;
+    const finalAcc = accuracyEl.textContent;
+    resultEl.textContent = `🎉 Test Complete! Speed: ${finalWpm} WPM | Accuracy: ${finalAcc}`;
+  }
 
-  charSpans.forEach((span, index) => {
-    const typedChar = typedChars[index];
-    span.classList.remove("correct", "incorrect", "current");
-
-    if (typedChar == null) {
-      if (index === typedChars.length) {
-        span.classList.add("current");
-      }
-    } else if (typedChar === targetChars[index]) {
-      span.classList.add("correct");
+  function playAudio() {
+    if ('speechSynthesis' in window) {
+      stopAudio();
+      const utterance = new SpeechSynthesisUtterance(currentText);
+      utterance.lang = languageSelect.value === 'bn' ? 'bn-BD' : 'en-US';
+      window.speechSynthesis.speak(utterance);
     } else {
-      span.classList.add("incorrect");
-      mistakes++;
+      alert("Sorry, Text-to-Speech is not supported in your browser.");
     }
-  });
-
-  mistakesEl.textContent = mistakes;
-
-  // WPM calculation: (Standard 5 chars per word)
-  const timeElapsed = maxTime - timeLeft;
-  if (timeElapsed > 0) {
-    const wpm = Math.round(((typedChars.length / 5) / timeElapsed) * 60);
-    wpmEl.textContent = wpm < 0 || isNaN(wpm) || !isFinite(wpm) ? 0 : wpm;
   }
 
-  // Accuracy calculation
-  if (typedChars.length > 0) {
-    const correctChars = typedChars.length - mistakes;
-    const accuracy = Math.round((Math.max(0, correctChars) / typedChars.length) * 100);
-    accuracyEl.textContent = `${accuracy}%`;
-  } else {
-    accuracyEl.textContent = "100%";
+  function stopAudio() {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
   }
-}
 
-function handleTyping() {
-  if (!isTyping && typingInput.value.length > 0) {
-    startTimer();
-  }
-  updateStats();
+  // Event Listeners
+  typingInput.addEventListener("input", handleTyping);
+  restartBtn.addEventListener("click", initTest);
+  languageSelect.addEventListener("change", initTest);
+  durationSelect.addEventListener("change", initTest);
+  listenBtn.addEventListener("click", playAudio);
+  stopListenBtn.addEventListener("click", stopAudio);
 
-  // End early if user completely types the text accurately
-  if (typingInput.value === currentText) {
-    endTest();
-  }
-}
-
-function endTest() {
-  clearInterval(timer);
-  isTyping = false;
-  typingInput.disabled = true;
-  
-  const finalWpm = wpmEl.textContent;
-  const finalAcc = accuracyEl.textContent;
-  resultEl.textContent = `🎉 Test Complete! Speed: ${finalWpm} WPM | Accuracy: ${finalAcc}`;
-}
-
-function playAudio() {
-  if ('speechSynthesis' in window) {
-    stopAudio();
-    const utterance = new SpeechSynthesisUtterance(currentText);
-    utterance.lang = languageSelect.value === 'bn' ? 'bn-BD' : 'en-US';
-    window.speechSynthesis.speak(utterance);
-  } else {
-    alert("Sorry, Text-to-Speech is not supported in your browser.");
-  }
-}
-
-function stopAudio() {
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-  }
-}
-
-// Event Listeners
-typingInput.addEventListener("input", handleTyping);
-restartBtn.addEventListener("click", initTest);
-languageSelect.addEventListener("change", initTest);
-durationSelect.addEventListener("change", initTest);
-listenBtn.addEventListener("click", playAudio);
-stopListenBtn.addEventListener("click", stopAudio);
-
-// Initialize on load
-initTest();
+  // Initialize Test
+  initTest();
+});
 </script>
 </body>
 </html>
