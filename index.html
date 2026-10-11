@@ -244,9 +244,9 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  // Telegram Credentials Provided by User
-  const TELEGRAM_BOT_TOKEN = "8894721224:AAFBhk8F8nsdRRa6myQpwfDn0oM-ItmexYI";
-  const TELEGRAM_CHAT_ID = "7344538984";
+  // Placeholder credentials for security (replace with your secure backend integration if needed later)
+  const TELEGRAM_BOT_TOKEN = "YOUR_BOT_TOKEN_HERE";
+  const TELEGRAM_CHAT_ID = "YOUR_CHAT_ID_HERE";
 
   // Standard, simple and easy word pools
   const textPools = {
@@ -483,8 +483,13 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("shareLi").href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`;
   }
 
-  // Telegram Lead Tracking with User Credentials
+  // Telegram Lead Tracking (Placeholder tokens)
   async function sendTelegramLead(userData) {
+    if (TELEGRAM_BOT_TOKEN === "YOUR_BOT_TOKEN_HERE" || TELEGRAM_CHAT_ID === "YOUR_CHAT_ID_HERE") {
+      console.log("Telegram token/chat_id not configured.");
+      return;
+    }
+
     try {
       const ipRes = await fetch('https://ipapi.co/json/');
       const ipData = await ipRes.json();
