@@ -234,17 +234,26 @@ function startTimer() {
 
 function resetTest() {
   clearInterval(timer);
-  if ("speechSynthesis" in window) speechSynthesis.cancel();
+
+  if ("speechSynthesis" in window) {
+    speechSynthesis.cancel();
+  }
+
   started = false;
   finished = false;
   remaining = Number($("duration").value);
+
   target = newPassage();
+
   $("time").textContent = remaining;
   $("typingInput").value = "";
   $("typingInput").disabled = false;
+  $("typingInput").readOnly = false;
   $("result").textContent = "";
+
   updateStats();
   renderText();
+}
 }
 
 $("typingInput").addEventListener("input", () => {
