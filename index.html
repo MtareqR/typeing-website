@@ -1,10 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Practice English and Bengali typing for free. Test your typing speed, accuracy and listening skills.">
 <title>Typing Practice — Free Typing Test</title>
 <style>
 :root {
@@ -13,15 +11,8 @@
   --good:#16845b; --bad:#e05252;
 }
 * {box-sizing:border-box}
-body {
-  margin:0; font-family:Arial, sans-serif; background:var(--bg);
-  color:var(--text); line-height:1.6;
-}
-header {
-  background:var(--card); border-bottom:1px solid var(--border);
-  padding:16px 6%; display:flex; justify-content:space-between;
-  align-items:center; gap:12px; flex-wrap:wrap;
-}
+body {margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+header {background:var(--card);border-bottom:1px solid var(--border);padding:16px 6%;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .logo {font-size:21px;font-weight:800;color:var(--accent)}
 .logo span {color:var(--text)}
 nav {display:flex;gap:18px;flex-wrap:wrap}
@@ -30,59 +21,33 @@ main {max-width:950px;margin:38px auto;padding:0 18px}
 .hero {text-align:center;margin-bottom:28px}
 .hero h1 {font-size:clamp(28px,5vw,43px);line-height:1.2;margin:0 0 12px}
 .hero p {color:var(--muted);margin:0}
-.card {
-  background:var(--card);border:1px solid var(--border);
-  border-radius:18px;padding:24px;margin-bottom:20px;
-  box-shadow:0 8px 28px rgba(30,40,80,.035);
-}
+.card {background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:20px;box-shadow:0 8px 28px rgba(30,40,80,.035)}
 .controls {display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-select,button,textarea {
-  font:inherit;border-radius:10px;
-}
-select {
-  border:1px solid var(--border);padding:10px 12px;
-  background:white;color:var(--text);
-}
-button {
-  border:0;padding:11px 17px;background:var(--accent);
-  color:white;font-weight:700;cursor:pointer;
-}
+select,button,textarea {font:inherit;border-radius:10px}
+select {border:1px solid var(--border);padding:10px 12px;background:white;color:var(--text)}
+button {border:0;padding:11px 17px;background:var(--accent);color:white;font-weight:700;cursor:pointer}
 button.secondary {background:#efedff;color:var(--accent)}
 button:disabled {opacity:.5;cursor:not-allowed}
-.stats {
-  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:12px;margin:22px 0;
-}
-.stat {
-  background:#f8f9ff;border:1px solid var(--border);
-  padding:15px 10px;border-radius:12px;text-align:center;
-}
+.stats {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:22px 0}
+.stat {background:#f8f9ff;border:1px solid var(--border);padding:15px 10px;border-radius:12px;text-align:center}
 .stat strong {display:block;font-size:26px;color:var(--accent)}
 .stat span {font-size:12px;color:var(--muted)}
-#textDisplay {
-  background:#fafbff;border:1px solid var(--border);
-  border-radius:12px;padding:20px;min-height:130px;
-  font-size:21px;line-height:1.9;overflow-wrap:anywhere;
-}
+#textDisplay {background:#fafbff;border:1px solid var(--border);border-radius:12px;padding:20px;min-height:130px;font-size:21px;line-height:1.9;overflow-wrap:anywhere}
 .char.correct {color:var(--good)}
 .char.incorrect {color:var(--bad);background:#ffe7e7;border-radius:3px}
 .char.current {border-left:2px solid var(--accent)}
-#typingInput {
-  width:100%;min-height:115px;padding:15px;margin-top:14px;
-  border:1px solid var(--border);resize:vertical;
-  outline:none;background:white;color:var(--text);
-}
+#typingInput {width:100%;min-height:115px;padding:15px;margin-top:14px;border:1px solid var(--border);resize:vertical;outline:none;background:white;color:var(--text)}
 #typingInput:focus {border-color:var(--accent);box-shadow:0 0 0 3px #6558e81a}
 .hint {font-size:13px;color:var(--muted)}
 .result {font-weight:700;margin-top:15px;min-height:26px}
 .section-title {font-size:20px;margin:0 0 12px}
 footer {text-align:center;padding:28px;color:var(--muted);font-size:13px}
-@media(max-width:560px) {
-  header {padding:14px 18px}
-  main {margin:24px auto}
-  .card {padding:17px}
-  .stats {grid-template-columns:repeat(2,minmax(0,1fr))}
-  #textDisplay {font-size:18px;padding:14px}
+@media(max-width:560px){
+  header{padding:14px 18px}
+  main{margin:24px auto}
+  .card{padding:17px}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #textDisplay{font-size:18px;padding:14px}
 }
 </style>
 </head>
@@ -186,105 +151,4 @@ function renderText() {
   [...target].forEach((character, index) => {
     const span = document.createElement("span");
     span.className = "char";
-    span.textContent = character;
-    if (index < typed.length) {
-      span.classList.add(typed[index] === character ? "correct" : "incorrect");
-    } else if (index === typed.length && !finished) {
-      span.classList.add("current");
-    }
-    $("textDisplay").appendChild(span);
-  });
-}
-
-function updateStats() {
-  const typed = $("typingInput").value;
-  let correct = 0;
-  for (let i = 0; i < typed.length; i++) {
-    if (typed[i] === target[i]) correct++;
-  }
-  const elapsed = started ? Math.max((Date.now() - startTime) / 60000, 1 / 60000) : 0;
-  $("wpm").textContent = elapsed ? Math.round((correct / 5) / elapsed) : 0;
-  $("accuracy").textContent = typed.length
-    ? Math.round((correct / typed.length) * 100) + "%"
-    : "100%";
-  $("mistakes").textContent = typed.length - correct;
-}
-
-function endTest() {
-  finished = true;
-  clearInterval(timer);
-  $("typingInput").disabled = true;
-  $("result").textContent =
-    "Test complete! Final speed: " + $("wpm").textContent +
-    " WPM · Accuracy: " + $("accuracy").textContent;
-  renderText();
-}
-
-function startTimer() {
-  if (started) return;
-  started = true;
-  startTime = Date.now();
-  timer = setInterval(() => {
-    remaining--;
-    $("time").textContent = remaining;
-    updateStats();
-    if (remaining <= 0) endTest();
-  }, 1000);
-}
-
-function resetTest() {
-  clearInterval(timer);
-
-  if ("speechSynthesis" in window) {
-    speechSynthesis.cancel();
-  }
-
-  started = false;
-  finished = false;
-  remaining = Number($("duration").value);
-
-  target = newPassage();
-
-  $("time").textContent = remaining;
-  $("typingInput").value = "";
-  $("typingInput").disabled = false;
-  $("typingInput").readOnly = false;
-  $("result").textContent = "";
-
-  updateStats();
-  renderText();
-}
-}
-
-$("typingInput").addEventListener("input", () => {
-  if (finished) return;
-  startTimer();
-  renderText();
-  updateStats();
-  if ($("typingInput").value.length >= target.length) endTest();
-});
-
-$("restart").addEventListener("click", resetTest);
-$("language").addEventListener("change", resetTest);
-$("duration").addEventListener("change", resetTest);
-
-$("listen").addEventListener("click", () => {
-  if (!("speechSynthesis" in window)) {
-    $("result").textContent = "Audio is not supported by this browser.";
-    return;
-  }
-  speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(target);
-  utterance.lang = $("language").value === "bn" ? "bn-BD" : "en-US";
-  utterance.rate = 0.85;
-  speechSynthesis.speak(utterance);
-});
-
-$("stopListen").addEventListener("click", () => {
-  if ("speechSynthesis" in window) speechSynthesis.cancel();
-});
-
-resetTest();
-</script>
-</body>
-</html>
+    span
