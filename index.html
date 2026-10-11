@@ -127,28 +127,4 @@ const passages = {
   ],
   bn: [
     "নিয়মিত অনুশীলন করলে টাইপিংয়ের গতি এবং নির্ভুলতা ধীরে ধীরে বাড়ে। প্রথমে সঠিকভাবে টাইপ করার চেষ্টা করো।",
-    "প্রতিদিন অল্প সময় অনুশীলন করলেও অনেক উন্নতি করা সম্ভব। ধৈর্য ধরে শেখো এবং নিজের অগ্রগতি দেখো।",
-    "প্রযুক্তি আমাদের নতুন কিছু শিখতে সাহায্য করে। ভালোভাবে টাইপ করতে পারলে পড়াশোনা ও কাজ করা সহজ হয়।"
-  ]
-};
-
-const $ = id => document.getElementById(id);
-let target = "";
-let started = false;
-let finished = false;
-let remaining = 30;
-let timer = null;
-let startTime = 0;
-
-function newPassage() {
-  const list = passages[$("language").value];
-  return list[Math.floor(Math.random() * list.length)];
-}
-
-function renderText() {
-  const typed = $("typingInput").value;
-  $("textDisplay").innerHTML = "";
-  [...target].forEach((character, index) => {
-    const span = document.createElement("span");
-    span.className = "char";
-    span
+    "প্র
