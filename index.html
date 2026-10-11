@@ -32,7 +32,7 @@ button:disabled {opacity:.5;cursor:not-allowed}
 .stat {background:#f8f9ff;border:1px solid var(--border);padding:15px 10px;border-radius:12px;text-align:center}
 .stat strong {display:block;font-size:26px;color:var(--accent)}
 .stat span {font-size:12px;color:var(--muted)}
-#textDisplay {background:#fafbff;border:1px solid var(--border);border-radius:12px;padding:20px;min-height:130px;font-size:21px;line-height:1.9;overflow-wrap:anywhere;user-select:none}
+#textDisplay {background:#fafbff;border:1px solid var(--border);border-radius:12px;padding:20px;min-height:150px;max-height:220px;overflow-y:auto;font-size:20px;line-height:1.9;overflow-wrap:anywhere;cursor:pointer}
 .char.correct {color:var(--good)}
 .char.incorrect {color:var(--bad);background:#ffe7e7;border-radius:3px}
 .char.current {border-left:2px solid var(--accent);background:#e0e0ff}
@@ -78,14 +78,16 @@ footer {text-align:center;padding:28px;color:var(--muted);font-size:13px}
       <label for="duration">Time</label>
       <select id="duration">
         <option value="15">15 seconds</option>
-        <option value="30" selected>30 seconds</option>
+        <option value="30">30 seconds</option>
         <option value="60">60 seconds</option>
+        <option value="120">120 seconds (2 min)</option>
+        <option value="180" selected>180 seconds (3 min)</option>
       </select>
       <button id="restart">New Test</button>
     </div>
 
     <div class="stats">
-      <div class="stat"><strong id="time">30</strong><span>Seconds left</span></div>
+      <div class="stat"><strong id="time">180</strong><span>Seconds left</span></div>
       <div class="stat"><strong id="wpm">0</strong><span>WPM</span></div>
       <div class="stat"><strong id="accuracy">100%</strong><span>Accuracy</span></div>
       <div class="stat"><strong id="mistakes">0</strong><span>Mistakes</span></div>
@@ -120,16 +122,12 @@ footer {text-align:center;padding:28px;color:var(--muted);font-size:13px}
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  const passages = {
+  const wordPools = {
     en: [
-      "Learning a new skill takes time and practice. Start slowly, focus on accuracy, and try to improve a little every day.",
-      "Technology helps people learn new things from anywhere in the world. A little practice every day can make a big difference.",
-      "Good typing skills help you study, work, write emails, and communicate more easily. Keep practicing and celebrate your progress."
+      "learning", "new", "skill", "takes", "time", "and", "practice", "start", "slowly", "focus", "on", "accuracy", "try", "to", "improve", "a", "little", "every", "day", "technology", "helps", "people", "learn", "things", "from", "anywhere", "in", "the", "world", "good", "typing", "skills", "help", "you", "study", "work", "write", "emails", "communicate", "more", "easily", "keep", "practicing", "celebrate", "progress", "success", "comes", "with", "consistent", "effort", "patience", "dedication", "challenges", "make", "us", "stronger", "smart", "habits", "build", "better", "future", "digital", "age", "requires", "fast", "accurate", "keyboard", "control", "consistency", "is", "key", "mastering", "any", "craft", "requires", "focus", "flow", "state", "helps", "increase", "productivity", "efficiency", "code", "creativity", "logic", "problem", "solving", "mindset", "brings", "joy", "satisfaction", "active", "listening", "improves", "communication", "methods", "daily", "routine", "shapes", "our", "habits", "future", "goals", "require", "unwavering", "determination", "explore", "vast", "horizons", "discover", "hidden", "talents", "within", "yourself", "always", "stay", "curious", "never", "stop", "growing"
     ],
     bn: [
-      "নিয়মিত অনুশীলন করলে টাইপিংয়ের গতি এবং নির্ভুলতা ধীরে ধীরে বাড়ে। প্রথমে সঠিকভাবে টাইপ করার চেষ্টা করো।",
-      "প্রযুক্তি আমাদের নতুন কিছু শেখার সুযোগ করে দেয়। প্রতিদিনের কিছুটা সময় অনুশীলন আপনাকে দ্রুত টাইপ করতে সাহায্য করবে।",
-      "কীবোর্ডের দিকে না তাকিয়ে স্ক্রিনের দিকে তাকিয়ে টাইপ করার চেষ্টা করুন। এতে মনোযোগ ও গতি দুটোই বৃদ্ধি পায়।"
+      "নিয়মিত", "অনুশীলন", "করলে", "টাইপিংয়ের", "গতি", "এবং", "নির্ভুলতা", "ধীরে", "ধীরে", "বাড়ে", "প্রথমে", "সঠিকভাবে", "টাইপ", "করার", "চেষ্টা", "করো", "প্রযুক্তি", "আমাদের", "নতুন", "কিছু", "শেখার", "সুযোগ", "করে", "দেয়", "প্রতিদিনের", "কিছুটা", "সময়", "আপনাকে", "দ্রুত", "সাহায্য", "করবে", "কীবোর্ডের", "দিকে", "না", "তাকিয়ে", "স্ক্রিনের", "তাকান", "এতে", "মনোযোগ", "দুটোই", "বৃদ্ধি", "পায়", "সাফল্য", "ধৈর্য", "ধরে", "কাজ", "অবশ্যই", "আসে", "জীবনে", "বড়", "অর্জন", "হলে", "পরিশ্রম", "জরুরি", "ডিজিটাল", "যুগে", "দক্ষতা", "খubই", "গুরুত্বপূর্ণ", "একটি", "বিষয়", "নিজের", "উপরে", "বিশ্বাস", "রেখে", "এগিয়ে", "চলুন", "শিক্ষা", "জীবনের", "মেরুদণ্ড", "তাই", "জ্ঞান", "অর্জন", "বন্ধ", "করা", "যাবে", "না", "প্রতিটি", "দিন", "নতুন", "অভিজ্ঞতা", "নিয়ে", "আসে", "ভালো", "মানুষ", "হতে", "গেলে", "সততা", "সবসময়", "বজায়", "রাখা", "প্রয়োজন"
     ]
   };
 
@@ -148,14 +146,38 @@ document.addEventListener("DOMContentLoaded", function() {
 
   let currentText = "";
   let timer = null;
-  let maxTime = 30;
-  let timeLeft = 30;
+  let maxTime = 180;
+  let timeLeft = 180;
   let isTyping = false;
 
-  function getRandomText() {
+  function generateUniqueParagraph() {
     const lang = languageSelect.value;
-    const list = passages[lang];
-    return list[Math.floor(Math.random() * list.length)];
+    const pool = [...wordPools[lang]];
+    
+    // Shuffle pool randomly for unique text each time
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+
+    // Determine target word count based on selected duration (approx 1.2 words per second, max ~220 words for 3 mins)
+    const durationSec = parseInt(durationSelect.value, 10);
+    const targetWordCount = Math.min(pool.length, Math.max(30, Math.floor(durationSec * 1.3)));
+    
+    const selectedWords = pool.slice(0, targetWordCount);
+    
+    // Join words into sentences and paragraph
+    let paragraph = "";
+    let sentence = [];
+    selectedWords.forEach((word, index) => {
+      sentence.push(word);
+      if (sentence.length >= (Math.floor(Math.random() * 5) + 6) || index === selectedWords.length - 1) {
+        paragraph += sentence.join(" ") + ". ";
+        sentence = [];
+      }
+    });
+
+    return paragraph.trim();
   }
 
   function initTest() {
@@ -175,7 +197,7 @@ document.addEventListener("DOMContentLoaded", function() {
     typingInput.value = "";
     typingInput.disabled = false;
     
-    currentText = getRandomText();
+    currentText = generateUniqueParagraph();
     textDisplay.innerHTML = "";
     
     Array.from(currentText).forEach((char, index) => {
@@ -228,6 +250,8 @@ document.addEventListener("DOMContentLoaded", function() {
       if (typedChar == null) {
         if (index === typedChars.length) {
           span.classList.add("current");
+          // Auto scroll text display if text is long
+          span.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
       } else if (typedChar === targetChars[index]) {
         span.classList.add("correct");
@@ -254,15 +278,9 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  function endTest() {
-    clearInterval(timer);
-    isTyping = false;
-    typingInput.disabled = true;
-    
-    const finalWpm = wpmEl.textContent;
-    const finalAcc = accuracyEl.textContent;
-    resultEl.textContent = `🎉 Test Complete! Speed: ${finalWpm} WPM | Accuracy: ${finalAcc}`;
-  }
+  textDisplay.addEventListener("click", () => {
+    typingInput.focus();
+  });
 
   function playAudio() {
     if ('speechSynthesis' in window) {
@@ -279,6 +297,16 @@ document.addEventListener("DOMContentLoaded", function() {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
+  }
+
+  function endTest() {
+    clearInterval(timer);
+    isTyping = false;
+    typingInput.disabled = true;
+    
+    const finalWpm = wpmEl.textContent;
+    const finalAcc = accuracyEl.textContent;
+    resultEl.textContent = `🎉 Test Complete! Speed: ${finalWpm} WPM | Accuracy: ${finalAcc}`;
   }
 
   // Event Listeners
