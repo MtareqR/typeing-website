@@ -26,10 +26,10 @@
 }
 
 * { box-sizing: border-box; transition: background 0.2s, border-color 0.2s; }
-body { margin: 0; font-family: var(--font-main); background: var(--bg); color: var(--text); line-height: 1.6; }
+body { margin: 0; font-family: var(--font-main); background: var(--bg); color: var(--text); line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; align-items: center; }
 
 /* Header & Nav */
-header { background: var(--card); border-bottom: 1px solid var(--card-border); padding: 14px 6%; display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; }
+header { width: 100%; background: var(--card); border-bottom: 1px solid var(--card-border); padding: 14px 6%; display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; }
 .logo { font-size: 22px; font-weight: 800; color: var(--accent); display: flex; align-items: center; gap: 6px; cursor: pointer; }
 .logo span { color: var(--text); }
 nav { display: flex; gap: 20px; align-items: center; }
@@ -44,10 +44,12 @@ nav a:hover, nav a.active { color: var(--text); border-bottom: 2px solid var(--a
 .btn-logout { background: transparent; color: var(--bad); border: 1px solid var(--bad); padding: 6px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 13px; }
 .btn-logout:hover { background: var(--bad); color: white; }
 
-main { max-width: 900px; margin: 40px auto; padding: 0 18px; display: flex; flex-direction: column; align-items: center; }
+main { width: 100%; max-width: 900px; margin: 40px auto; padding: 0 18px; display: flex; flex-direction: column; align-items: center; }
 
-/* Centered Dashboard & Test Cards */
-.card { background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; padding: 28px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 100%; max-width: 850px; margin-left: auto; margin-right: auto; }
+#testPage, #dashboardPage { width: 100%; display: flex; flex-direction: column; align-items: center; }
+
+/* Perfectly Centered Cards */
+.card { background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; padding: 28px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 100%; max-width: 800px; }
 .controls { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
 .control-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
@@ -112,7 +114,7 @@ button.secondary:hover { background: #475569; }
 .li { background: #0a66c2; }
 
 /* Dashboard Sections */
-#dashboardPage { display: none; width: 100%; max-width: 850px; }
+#dashboardPage { display: none; }
 
 .tabs { display: flex; gap: 10px; margin-bottom: 15px; }
 .tab-btn { background: var(--card-border); color: var(--text); padding: 8px 14px; font-size: 13px; border-radius: 6px; cursor: pointer; }
@@ -131,7 +133,7 @@ th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
 .auth-tab { flex: 1; text-align: center; padding: 8px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 6px; color: var(--muted); }
 .auth-tab.active { background: var(--accent); color: white; }
 
-footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--card-border); margin-top: 40px; width: 100%; }
+footer { width: 100%; text-align: center; padding: 25px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--card-border); margin-top: auto; }
 
 @media(max-width: 600px) {
   .stats { grid-template-columns: repeat(2, 1fr); }
@@ -156,7 +158,7 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
 
 <main>
   <!-- Main Typing Test Page -->
-  <div id="testPage" style="width: 100%;">
+  <div id="testPage">
     <section class="card" id="testCard">
       <div class="controls">
         <div class="control-group">
@@ -199,7 +201,7 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
       </div>
 
       <!-- Typing Area -->
-      <div id="typingAreaWrapper">
+      <div id="typingAreaWrapper" style="width: 100%;">
         <div id="typingArena" tabindex="0">
           <div id="textContainer"></div>
         </div>
@@ -311,7 +313,7 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
       <h3>User Login</h3>
       <div class="modal-group">
         <label style="font-size:12px; color:var(--muted);">Email Address</label>
-        <input type="email" id="loginEmail" placeholder="Enter your registered email">
+        <input type="email" id="loginEmail" placeholder="Enter your email">
       </div>
       <div class="modal-group">
         <label style="font-size:12px; color:var(--muted);">Password</label>
@@ -324,7 +326,7 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
       <button id="closeAuthLogin" class="secondary" style="width:100%; margin-top:8px;">Close</button>
     </div>
 
-    <!-- Sign Up Form -->
+    <!-- Sign Up Form (Direct Login, No Verification) -->
     <div id="signupFormSection" style="display:none;">
       <h3>Create New Account</h3>
       <div class="modal-group">
@@ -336,14 +338,14 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
       <div class="modal-group">
         <input type="password" id="regPassword" placeholder="Create Password (min 6 chars)">
       </div>
-      <button id="signupSubmitBtn" style="width:100%; margin-top:5px;">Sign Up & Send Email Verification</button>
+      <button id="signupSubmitBtn" style="width:100%; margin-top:5px;">Sign Up & Login</button>
       <button id="closeAuthSignup" class="secondary" style="width:100%; margin-top:8px;">Close</button>
     </div>
 
     <!-- Forgot Password Form -->
     <div id="forgotFormSection" style="display:none;">
       <h3>Reset Password</h3>
-      <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">Enter your email to receive a password reset link from Firebase.</p>
+      <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">Enter your email to receive a password reset link.</p>
       <div class="modal-group">
         <input type="email" id="forgotEmail" placeholder="Your Email Address">
       </div>
@@ -362,7 +364,6 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
     getAuth, 
     createUserWithEmailAndPassword, 
     signInWithEmailAndPassword, 
-    sendEmailVerification, 
     sendPasswordResetEmail, 
     signOut, 
     onAuthStateChanged,
@@ -412,19 +413,14 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
   const forgotPassLink = document.getElementById("forgotPassLink");
   const backToLoginBtn = document.getElementById("backToLoginBtn");
 
-  // Track Firebase Auth State
+  // Track Firebase Auth State (No Email Verification Check)
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      if (user.emailVerified) {
-        currentUser = user;
-        openAuthBtn.style.display = "none";
-        userProfile.style.display = "flex";
-        userNameHeader.textContent = `👤 ${user.displayName || user.email.split('@')[0]}`;
-        document.getElementById("userStatus").innerHTML = `Welcome back, <strong>${user.displayName || user.email}</strong>! Your scores are being saved.`;
-      } else {
-        alert("⚠️ Please check your email inbox and verify your account first!");
-        signOut(auth);
-      }
+      currentUser = user;
+      openAuthBtn.style.display = "none";
+      userProfile.style.display = "flex";
+      userNameHeader.textContent = `👤 ${user.displayName || user.email.split('@')[0]}`;
+      document.getElementById("userStatus").innerHTML = `Welcome back, <strong>${user.displayName || user.email}</strong>! Your scores are being saved.`;
     } else {
       currentUser = null;
       openAuthBtn.style.display = "block";
@@ -465,7 +461,7 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
   document.getElementById("closeAuthLogin").addEventListener("click", () => authModal.style.display = "none");
   document.getElementById("closeAuthSignup").addEventListener("click", () => authModal.style.display = "none");
 
-  // Firebase Sign Up
+  // Firebase Sign Up (Without Verification)
   signupSubmitBtn.addEventListener("click", async () => {
     const name = regName.value.trim();
     const email = regEmail.value.trim();
@@ -479,16 +475,14 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
-      await sendEmailVerification(userCredential.user);
-      alert("📧 Verification email sent! Please check your inbox and click the verification link before logging in.");
-      await signOut(auth);
+      alert("🎉 Account created and logged in successfully!");
       authModal.style.display = "none";
     } catch (error) {
       alert("❌ Error: " + error.message);
     }
   });
 
-  // Firebase Login
+  // Firebase Login (Without Verification)
   loginSubmitBtn.addEventListener("click", async () => {
     const email = loginEmail.value.trim();
     const password = loginPassword.value.trim();
@@ -499,14 +493,9 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
     }
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      if (!userCredential.user.emailVerified) {
-        alert("⚠️ Email not verified! Please check your email inbox.");
-        await signOut(auth);
-      } else {
-        alert("🎉 Successfully logged in!");
-        authModal.style.display = "none";
-      }
+      await signInWithEmailAndPassword(auth, email, password);
+      alert("🎉 Successfully logged in!");
+      authModal.style.display = "none";
     } catch (error) {
       alert("❌ Login Failed: " + error.message);
     }
@@ -593,7 +582,7 @@ document.addEventListener("DOMContentLoaded", function() {
   let isTyping = false;
 
   function showTestPage() {
-    testPage.style.display = "block";
+    testPage.style.display = "flex";
     dashboardPage.style.display = "none";
     navTest.classList.add("active");
     navDashboard.classList.remove("active");
@@ -602,7 +591,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   function showDashboardPage() {
     testPage.style.display = "none";
-    dashboardPage.style.display = "block";
+    dashboardPage.style.display = "flex";
     navDashboard.classList.add("active");
     navTest.classList.remove("active");
     loadHistory();
@@ -700,7 +689,7 @@ document.addEventListener("DOMContentLoaded", function() {
     timeLeft = maxTime;
     timeEl.textContent = timeLeft;
     wpmEl.textContent = "0";
-    accuracyEl.textContent = "100%_";
+    accuracyEl.textContent = "100%";
     mistakesEl.textContent = "0";
 
     fullText = generateText();
@@ -803,7 +792,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   function saveScoreRecord(wpm, accuracy, mistakes) {
     const record = {
-      name: "Guest User",
+      name: currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : "Guest User",
       wpm: parseInt(wpm, 10),
       accuracy: accuracy,
       mistakes: mistakes,
