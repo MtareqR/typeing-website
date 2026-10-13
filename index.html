@@ -44,10 +44,10 @@ nav a:hover, nav a.active { color: var(--text); border-bottom: 2px solid var(--a
 .btn-logout { background: transparent; color: var(--bad); border: 1px solid var(--bad); padding: 6px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 13px; }
 .btn-logout:hover { background: var(--bad); color: white; }
 
-main { max-width: 1000px; margin: 30px auto; padding: 0 18px; }
+main { max-width: 900px; margin: 40px auto; padding: 0 18px; display: flex; flex-direction: column; align-items: center; }
 
-/* Dashboard Cards */
-.card { background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+/* Centered Dashboard & Test Cards */
+.card { background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; padding: 28px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 100%; max-width: 850px; margin-left: auto; margin-right: auto; }
 .controls { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
 .control-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
@@ -63,7 +63,7 @@ button.secondary:hover { background: #475569; }
 .stat strong { display: block; font-size: 28px; color: var(--accent); font-family: var(--font-mono); }
 .stat span { font-size: 12px; color: var(--muted); text-transform: uppercase; font-weight: 700; }
 
-/* In-Line Cursor Typing Arena */
+/* Typing Arena */
 #typingArena {
   position: relative;
   background: var(--bg);
@@ -112,7 +112,7 @@ button.secondary:hover { background: #475569; }
 .li { background: #0a66c2; }
 
 /* Dashboard Sections */
-#dashboardPage { display: none; }
+#dashboardPage { display: none; width: 100%; max-width: 850px; }
 
 .tabs { display: flex; gap: 10px; margin-bottom: 15px; }
 .tab-btn { background: var(--card-border); color: var(--text); padding: 8px 14px; font-size: 13px; border-radius: 6px; cursor: pointer; }
@@ -122,7 +122,7 @@ table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14p
 th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--card-border); }
 th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
 
-/* Modal Overlay & Auth Tabs */
+/* Auth Modal Overlay */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 9999; }
 .modal { background: var(--card); border: 1px solid var(--card-border); width: 100%; max-width: 420px; padding: 24px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
 .modal h3 { margin-top: 0; color: var(--text); }
@@ -131,7 +131,7 @@ th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
 .auth-tab { flex: 1; text-align: center; padding: 8px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 6px; color: var(--muted); }
 .auth-tab.active { background: var(--accent); color: white; }
 
-footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--card-border); margin-top: 40px; }
+footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--card-border); margin-top: 40px; width: 100%; }
 
 @media(max-width: 600px) {
   .stats { grid-template-columns: repeat(2, 1fr); }
@@ -156,7 +156,7 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
 
 <main>
   <!-- Main Typing Test Page -->
-  <div id="testPage">
+  <div id="testPage" style="width: 100%;">
     <section class="card" id="testCard">
       <div class="controls">
         <div class="control-group">
@@ -298,20 +298,20 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
   </div>
 </main>
 
-<!-- Authentication Modal (Login / Sign Up / Forgot Password) -->
+<!-- Firebase Authentication Modal -->
 <div class="modal-overlay" id="authModal">
   <div class="modal">
     <div class="auth-switch">
-      <div class="auth-tab active" id="tabLoginBtn" onclick="switchAuthMode('login')">Login</div>
-      <div class="auth-tab" id="tabSignupBtn" onclick="switchAuthMode('signup')">Sign Up</div>
+      <div class="auth-tab active" id="tabLoginBtn">Login</div>
+      <div class="auth-tab" id="tabSignupBtn">Sign Up</div>
     </div>
 
     <!-- Login Form -->
     <div id="loginFormSection">
       <h3>User Login</h3>
       <div class="modal-group">
-        <label style="font-size:12px; color:var(--muted);">Username or Email</label>
-        <input type="text" id="loginIdentifier" placeholder="Enter username or email">
+        <label style="font-size:12px; color:var(--muted);">Email Address</label>
+        <input type="email" id="loginEmail" placeholder="Enter your registered email">
       </div>
       <div class="modal-group">
         <label style="font-size:12px; color:var(--muted);">Password</label>
@@ -319,61 +319,224 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
       </div>
       <button id="loginSubmitBtn" style="width:100%; margin-top:5px;">Login</button>
       <p style="text-align:center; margin-top:12px; font-size:13px;">
-        <a href="#" onclick="switchAuthMode('forgot')" style="color:var(--accent); text-decoration:none;">Forgot Password?</a>
+        <a href="#" id="forgotPassLink" style="color:var(--accent); text-decoration:none;">Forgot Password?</a>
       </p>
       <button id="closeAuthLogin" class="secondary" style="width:100%; margin-top:8px;">Close</button>
     </div>
 
-    <!-- Sign Up Form (Step 1 & Step 2 for OTP Verification) -->
+    <!-- Sign Up Form -->
     <div id="signupFormSection" style="display:none;">
-      <div id="signupStep1">
-        <h3>Create New Account</h3>
-        <div class="modal-group">
-          <input type="text" id="regName" placeholder="Full Name">
-        </div>
-        <div class="modal-group">
-          <input type="text" id="regUsername" placeholder="Username (unique)">
-        </div>
-        <div class="modal-group">
-          <input type="email" id="regEmail" placeholder="Email Address">
-        </div>
-        <div class="modal-group">
-          <input type="password" id="regPassword" placeholder="Create Password">
-        </div>
-        <button id="sendOtpBtn" style="width:100%; margin-top:5px;">Send Verification OTP</button>
-        <button id="closeAuthSignup" class="secondary" style="width:100%; margin-top:8px;">Close</button>
+      <h3>Create New Account</h3>
+      <div class="modal-group">
+        <input type="text" id="regName" placeholder="Full Name">
       </div>
-
-      <div id="signupStep2" style="display:none;">
-        <h3>Verify Email OTP</h3>
-        <p style="font-size:13px; color:var(--muted); margin-bottom:10px;">Enter 6-digit code sent to <strong id="sentEmailSpan"></strong></p>
-        <div class="modal-group">
-          <input type="text" id="otpInput" placeholder="Enter 6-Digit OTP" maxlength="6" style="text-align:center; font-size:18px; letter-spacing:4px;">
-        </div>
-        <button id="verifyOtpBtn" style="width:100%; margin-top:5px;">Verify & Register</button>
-        <button onclick="backToSignupStep1()" class="secondary" style="width:100%; margin-top:8px;">Back</button>
+      <div class="modal-group">
+        <input type="email" id="regEmail" placeholder="Email Address">
       </div>
+      <div class="modal-group">
+        <input type="password" id="regPassword" placeholder="Create Password (min 6 chars)">
+      </div>
+      <button id="signupSubmitBtn" style="width:100%; margin-top:5px;">Sign Up & Send Email Verification</button>
+      <button id="closeAuthSignup" class="secondary" style="width:100%; margin-top:8px;">Close</button>
     </div>
 
     <!-- Forgot Password Form -->
     <div id="forgotFormSection" style="display:none;">
       <h3>Reset Password</h3>
-      <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">Enter your registered email to receive a password reset link.</p>
+      <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">Enter your email to receive a password reset link from Firebase.</p>
       <div class="modal-group">
         <input type="email" id="forgotEmail" placeholder="Your Email Address">
       </div>
-      <button id="forgotSubmitBtn" style="width:100%; margin-top:5px;">Send Reset Instructions</button>
-      <button onclick="switchAuthMode('login')" class="secondary" style="width:100%; margin-top:8px;">Back to Login</button>
+      <button id="forgotSubmitBtn" style="width:100%; margin-top:5px;">Send Reset Link</button>
+      <button id="backToLoginBtn" class="secondary" style="width:100%; margin-top:8px;">Back to Login</button>
     </div>
   </div>
 </div>
 
 <footer>TypeFlow Platform · Professional Typing Practice</footer>
 
-<script>
-let switchAuthMode;
-let backToSignupStep1;
+<!-- Firebase Modular SDK Scripts -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword, 
+    sendEmailVerification, 
+    sendPasswordResetEmail, 
+    signOut, 
+    onAuthStateChanged,
+    updateProfile 
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+  // Your Firebase Configuration (typing-website-b3d1)[cite: 3]
+  const firebaseConfig = {
+    apiKey: "AIzaSyBi9OFWL9xnPtgq-fU10Zh53YzPxnXrZv4",
+    authDomain: "typing-website-b3d1.firebaseapp.com",
+    projectId: "typing-website-b3d1",
+    storageBucket: "typing-website-b3d1.firebasestorage.app",
+    messagingSenderId: "873900210293",
+    appId: "1:873900210293:web:0877811b85d8dbdc13e03c",
+    measurementId: "G-K9575Q7WGW"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  let currentUser = null;
+
+  // DOM Elements
+  const openAuthBtn = document.getElementById("openAuthBtn");
+  const userProfile = document.getElementById("userProfile");
+  const userNameHeader = document.getElementById("userNameHeader");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const authModal = document.getElementById("authModal");
+
+  const loginFormSection = document.getElementById("loginFormSection");
+  const signupFormSection = document.getElementById("signupFormSection");
+  const forgotFormSection = document.getElementById("forgotFormSection");
+  const tabLoginBtn = document.getElementById("tabLoginBtn");
+  const tabSignupBtn = document.getElementById("tabSignupBtn");
+
+  const loginEmail = document.getElementById("loginEmail");
+  const loginPassword = document.getElementById("loginPassword");
+  const loginSubmitBtn = document.getElementById("loginSubmitBtn");
+
+  const regName = document.getElementById("regName");
+  const regEmail = document.getElementById("regEmail");
+  const regPassword = document.getElementById("regPassword");
+  const signupSubmitBtn = document.getElementById("signupSubmitBtn");
+
+  const forgotEmail = document.getElementById("forgotEmail");
+  const forgotSubmitBtn = document.getElementById("forgotSubmitBtn");
+  const forgotPassLink = document.getElementById("forgotPassLink");
+  const backToLoginBtn = document.getElementById("backToLoginBtn");
+
+  // Track Firebase Auth State
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      if (user.emailVerified) {
+        currentUser = user;
+        openAuthBtn.style.display = "none";
+        userProfile.style.display = "flex";
+        userNameHeader.textContent = `👤 ${user.displayName || user.email.split('@')[0]}`;
+        document.getElementById("userStatus").innerHTML = `Welcome back, <strong>${user.displayName || user.email}</strong>! Your scores are being saved.`;
+      } else {
+        alert("⚠️ Please check your email inbox and verify your account first!");
+        signOut(auth);
+      }
+    } else {
+      currentUser = null;
+      openAuthBtn.style.display = "block";
+      userProfile.style.display = "none";
+      document.getElementById("userStatus").innerHTML = `You are practicing as a <strong>Guest User</strong>. Login to save your progress permanently.`;
+    }
+  });
+
+  // UI Modal Controls
+  function switchAuthMode(mode) {
+    loginFormSection.style.display = "none";
+    signupFormSection.style.display = "none";
+    forgotFormSection.style.display = "none";
+    tabLoginBtn.classList.remove("active");
+    tabSignupBtn.classList.remove("active");
+
+    if (mode === 'login') {
+      loginFormSection.style.display = "block";
+      tabLoginBtn.classList.add("active");
+    } else if (mode === 'signup') {
+      signupFormSection.style.display = "block";
+      tabSignupBtn.classList.add("active");
+    } else if (mode === 'forgot') {
+      forgotFormSection.style.display = "block";
+    }
+  }
+
+  tabLoginBtn.addEventListener("click", () => switchAuthMode('login'));
+  tabSignupBtn.addEventListener("click", () => switchAuthMode('signup'));
+  forgotPassLink.addEventListener("click", (e) => { e.preventDefault(); switchAuthMode('forgot'); });
+  backToLoginBtn.addEventListener("click", () => switchAuthMode('login'));
+
+  openAuthBtn.addEventListener("click", () => {
+    switchAuthMode('login');
+    authModal.style.display = "flex";
+  });
+
+  document.getElementById("closeAuthLogin").addEventListener("click", () => authModal.style.display = "none");
+  document.getElementById("closeAuthSignup").addEventListener("click", () => authModal.style.display = "none");
+
+  // Firebase Sign Up
+  signupSubmitBtn.addEventListener("click", async () => {
+    const name = regName.value.trim();
+    const email = regEmail.value.trim();
+    const password = regPassword.value.trim();
+
+    if (!name || !email || !password) {
+      alert("Please enter all details.");
+      return;
+    }
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, { displayName: name });
+      await sendEmailVerification(userCredential.user);
+      alert("📧 Verification email sent! Please check your inbox and click the verification link before logging in.");
+      await signOut(auth);
+      authModal.style.display = "none";
+    } catch (error) {
+      alert("❌ Error: " + error.message);
+    }
+  });
+
+  // Firebase Login
+  loginSubmitBtn.addEventListener("click", async () => {
+    const email = loginEmail.value.trim();
+    const password = loginPassword.value.trim();
+
+    if (!email || !password) {
+      alert("Please fill in email and password.");
+      return;
+    }
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      if (!userCredential.user.emailVerified) {
+        alert("⚠️ Email not verified! Please check your email inbox.");
+        await signOut(auth);
+      } else {
+        alert("🎉 Successfully logged in!");
+        authModal.style.display = "none";
+      }
+    } catch (error) {
+      alert("❌ Login Failed: " + error.message);
+    }
+  });
+
+  // Firebase Password Reset
+  forgotSubmitBtn.addEventListener("click", async () => {
+    const email = forgotEmail.value.trim();
+    if (!email) {
+      alert("Please enter your email address.");
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      alert("📧 Password reset link sent to your email!");
+      switchAuthMode('login');
+    } catch (error) {
+      alert("❌ Error: " + error.message);
+    }
+  });
+
+  // Logout
+  logoutBtn.addEventListener("click", () => {
+    signOut(auth).then(() => alert("Logged out successfully."));
+  });
+</script>
+
+<script>
+// Main Typing Engine Script
 document.addEventListener("DOMContentLoaded", function() {
 
   const textPools = {
@@ -391,17 +554,11 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   };
 
-  // Elements
   const navTest = document.getElementById("navTest");
   const navDashboard = document.getElementById("navDashboard");
   const testPage = document.getElementById("testPage");
   const dashboardPage = document.getElementById("dashboardPage");
   const logoBtn = document.getElementById("logoBtn");
-
-  const openAuthBtn = document.getElementById("openAuthBtn");
-  const userProfile = document.getElementById("userProfile");
-  const userNameHeader = document.getElementById("userNameHeader");
-  const logoutBtn = document.getElementById("logoutBtn");
 
   const typingArena = document.getElementById("typingArena");
   const textContainer = document.getElementById("textContainer");
@@ -423,22 +580,6 @@ document.addEventListener("DOMContentLoaded", function() {
   const listenBtn = document.getElementById("listen");
   const stopListenBtn = document.getElementById("stopListen");
 
-  const authModal = document.getElementById("authModal");
-  const loginFormSection = document.getElementById("loginFormSection");
-  const signupFormSection = document.getElementById("signupFormSection");
-  const forgotFormSection = document.getElementById("forgotFormSection");
-  const tabLoginBtn = document.getElementById("tabLoginBtn");
-  const tabSignupBtn = document.getElementById("tabSignupBtn");
-
-  const signupStep1 = document.getElementById("signupStep1");
-  const signupStep2 = document.getElementById("signupStep2");
-  const sendOtpBtn = document.getElementById("sendOtpBtn");
-  const verifyOtpBtn = document.getElementById("verifyOtpBtn");
-  const loginSubmitBtn = document.getElementById("loginSubmitBtn");
-  const forgotSubmitBtn = document.getElementById("forgotSubmitBtn");
-  const closeAuthLogin = document.getElementById("closeAuthLogin");
-  const closeAuthSignup = document.getElementById("closeAuthSignup");
-
   const historyTableBody = document.getElementById("historyTableBody");
   const leaderboardTableBody = document.getElementById("leaderboardTableBody");
   const dailyTab = document.getElementById("dailyTab");
@@ -450,25 +591,7 @@ document.addEventListener("DOMContentLoaded", function() {
   let maxTime = 60;
   let timeLeft = 60;
   let isTyping = false;
-  let generatedOtp = "";
-  let tempRegData = {};
 
-  let currentUser = localStorage.getItem("typeflow_user") ? JSON.parse(localStorage.getItem("typeflow_user")) : null;
-
-  function updateHeaderState() {
-    if (currentUser && currentUser.email) {
-      openAuthBtn.style.display = "none";
-      userProfile.style.display = "flex";
-      userNameHeader.textContent = `👤 ${currentUser.name || currentUser.username}`;
-      document.getElementById("userStatus").innerHTML = `Welcome back, <strong>${currentUser.name}</strong> (${currentUser.email})! Your progress is saved.`;
-    } else {
-      openAuthBtn.style.display = "block";
-      userProfile.style.display = "none";
-      document.getElementById("userStatus").innerHTML = `You are practicing as a <strong>Guest User</strong>. Login to save your progress permanently.`;
-    }
-  }
-
-  // Navigation Logic
   function showTestPage() {
     testPage.style.display = "block";
     dashboardPage.style.display = "none";
@@ -491,15 +614,12 @@ document.addEventListener("DOMContentLoaded", function() {
   navDashboard.addEventListener("click", showDashboardPage);
 
   function keepFocus() {
-    if (testPage.style.display !== "none" && congratsScreen.style.display !== "block" && authModal.style.display !== "flex") {
+    if (testPage.style.display !== "none" && congratsScreen.style.display !== "block" && document.getElementById("authModal").style.display !== "flex") {
       hiddenInput.focus();
     }
   }
 
-  window.addEventListener("load", () => {
-    updateHeaderState();
-    keepFocus();
-  });
+  window.addEventListener("load", keepFocus);
 
   document.addEventListener("click", (e) => {
     if (!e.target.closest('button') && !e.target.closest('select') && !e.target.closest('input') && !e.target.closest('a') && !e.target.closest('.modal')) {
@@ -507,141 +627,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
-  // Modal Auth Switcher
-  switchAuthMode = function(mode) {
-    loginFormSection.style.display = "none";
-    signupFormSection.style.display = "none";
-    forgotFormSection.style.display = "none";
-    tabLoginBtn.classList.remove("active");
-    tabSignupBtn.classList.remove("active");
-
-    if (mode === 'login') {
-      loginFormSection.style.display = "block";
-      tabLoginBtn.classList.add("active");
-    } else if (mode === 'signup') {
-      signupFormSection.style.display = "block";
-      signupStep1.style.display = "block";
-      signupStep2.style.display = "none";
-      tabSignupBtn.classList.add("active");
-    } else if (mode === 'forgot') {
-      forgotFormSection.style.display = "block";
-    }
-  };
-
-  backToSignupStep1 = function() {
-    signupStep1.style.display = "block";
-    signupStep2.style.display = "none";
-  };
-
-  openAuthBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    switchAuthMode('login');
-    authModal.style.display = "flex";
-  });
-
-  closeAuthLogin.addEventListener("click", () => { authModal.style.display = "none"; keepFocus(); });
-  closeAuthSignup.addEventListener("click", () => { authModal.style.display = "none"; keepFocus(); });
-
-  // Sign Up & OTP Flow
-  sendOtpBtn.addEventListener("click", () => {
-    const name = document.getElementById("regName").value.trim();
-    const username = document.getElementById("regUsername").value.trim();
-    const email = document.getElementById("regEmail").value.trim();
-    const password = document.getElementById("regPassword").value.trim();
-
-    if (!name || !username || !email || !password) {
-      alert("Please fill in all registration fields.");
-      return;
-    }
-
-    let users = JSON.parse(localStorage.getItem("typeflow_users")) || [];
-    if (users.some(u => u.email === email || u.username === username)) {
-      alert("Email or Username already registered! Please login.");
-      return;
-    }
-
-    tempRegData = { name, username, email, password };
-    generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-
-    document.getElementById("sentEmailSpan").textContent = email;
-    signupStep1.style.display = "none";
-    signupStep2.style.display = "block";
-
-    alert(`[TypeFlow Email Verification]\n\nYour 6-digit OTP code is: ${generatedOtp}`);
-  });
-
-  verifyOtpBtn.addEventListener("click", () => {
-    const inputOtp = document.getElementById("otpInput").value.trim();
-
-    if (inputOtp === generatedOtp) {
-      let users = JSON.parse(localStorage.getItem("typeflow_users")) || [];
-      users.push(tempRegData);
-      localStorage.setItem("typeflow_users", JSON.stringify(users));
-
-      currentUser = tempRegData;
-      localStorage.setItem("typeflow_user", JSON.stringify(currentUser));
-      updateHeaderState();
-
-      authModal.style.display = "none";
-      alert("🎉 Account created and verified successfully!");
-      keepFocus();
-    } else {
-      alert("❌ Invalid OTP code. Please enter the correct code.");
-    }
-  });
-
-  // Login Flow (Supports Username or Email + Password)
-  loginSubmitBtn.addEventListener("click", () => {
-    const identifier = document.getElementById("loginIdentifier").value.trim();
-    const password = document.getElementById("loginPassword").value.trim();
-
-    if (!identifier || !password) {
-      alert("Please enter your login details.");
-      return;
-    }
-
-    let users = JSON.parse(localStorage.getItem("typeflow_users")) || [];
-    const foundUser = users.find(u => (u.email === identifier || u.username === identifier) && u.password === password);
-
-    if (foundUser) {
-      currentUser = foundUser;
-      localStorage.setItem("typeflow_user", JSON.stringify(currentUser));
-      updateHeaderState();
-      authModal.style.display = "none";
-      alert(`Welcome back, ${currentUser.name}!`);
-      keepFocus();
-    } else {
-      alert("❌ Invalid email/username or password!");
-    }
-  });
-
-  // Forgot Password Flow
-  forgotSubmitBtn.addEventListener("click", () => {
-    const email = document.getElementById("forgotEmail").value.trim();
-    if (!email) {
-      alert("Please enter your email address.");
-      return;
-    }
-
-    let users = JSON.parse(localStorage.getItem("typeflow_users")) || [];
-    const userExists = users.some(u => u.email === email);
-
-    if (userExists) {
-      alert(`📧 Password reset instructions have been sent to ${email}. (Simulated)`);
-      switchAuthMode('login');
-    } else {
-      alert("❌ This email is not registered in our system.");
-    }
-  });
-
-  logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("typeflow_user");
-    currentUser = null;
-    updateHeaderState();
-    alert("Logged out successfully.");
-  });
-
-  // Voice Speech Synthesis implementation
   listenBtn.addEventListener("click", () => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
@@ -650,14 +635,12 @@ document.addEventListener("DOMContentLoaded", function() {
       utterance.rate = 0.9;
       window.speechSynthesis.speak(utterance);
     } else {
-      alert("Text-to-speech voice is not supported by your browser.");
+      alert("Text-to-speech voice is not supported.");
     }
   });
 
   stopListenBtn.addEventListener("click", () => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
   });
 
   function generateText() {
@@ -717,7 +700,7 @@ document.addEventListener("DOMContentLoaded", function() {
     timeLeft = maxTime;
     timeEl.textContent = timeLeft;
     wpmEl.textContent = "0";
-    accuracyEl.textContent = "100%";
+    accuracyEl.textContent = "100%_";
     mistakesEl.textContent = "0";
 
     fullText = generateText();
@@ -816,17 +799,11 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("finalMistakes").textContent = finalMistakesVal;
 
     saveScoreRecord(finalWpmVal, finalAccVal, finalMistakesVal);
-
-    const shareText = encodeURIComponent(`I just scored ${finalWpmVal} WPM with ${finalAccVal} accuracy on TypeFlow Typing Practice! Check it out.`);
-    document.getElementById("shareFb").href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${shareText}`;
-    document.getElementById("shareWa").href = `https://api.whatsapp.com/send?text=${shareText}`;
-    document.getElementById("shareTw").href = `https://twitter.com/intent/tweet?text=${shareText}`;
-    document.getElementById("shareLi").href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`;
   }
 
   function saveScoreRecord(wpm, accuracy, mistakes) {
     const record = {
-      name: currentUser ? (currentUser.name || currentUser.username) : "Guest User",
+      name: "Guest User",
       wpm: parseInt(wpm, 10),
       accuracy: accuracy,
       mistakes: mistakes,
