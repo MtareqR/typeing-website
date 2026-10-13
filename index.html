@@ -44,12 +44,12 @@ nav a:hover, nav a.active { color: var(--text); border-bottom: 2px solid var(--a
 .btn-logout { background: transparent; color: var(--bad); border: 1px solid var(--bad); padding: 6px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 13px; }
 .btn-logout:hover { background: var(--bad); color: white; }
 
-main { width: 100%; max-width: 900px; margin: 40px auto; padding: 0 18px; display: flex; flex-direction: column; align-items: center; }
+main { width: 100%; max-width: 900px; margin: 40px auto; padding: 0 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-#testPage, #dashboardPage { width: 100%; display: flex; flex-direction: column; align-items: center; }
+#testPage, #dashboardPage { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
 /* Perfectly Centered Cards */
-.card { background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; padding: 28px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 100%; max-width: 800px; }
+.card { background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; padding: 28px; margin-bottom: 24px; margin-left: auto; margin-right: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 100%; max-width: 800px; }
 .controls { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
 .control-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
@@ -60,7 +60,7 @@ button.secondary { background: var(--card-border); color: var(--text); }
 button.secondary:hover { background: #475569; }
 
 /* Live Stats */
-.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin: 20px 0; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin: 20px 0; width: 100%; }
 .stat { background: var(--bg); border: 1px solid var(--card-border); padding: 14px; border-radius: 12px; text-align: center; }
 .stat strong { display: block; font-size: 28px; color: var(--accent); font-family: var(--font-mono); }
 .stat span { font-size: 12px; color: var(--muted); text-transform: uppercase; font-weight: 700; }
@@ -79,6 +79,7 @@ button.secondary:hover { background: #475569; }
   line-height: 2;
   cursor: text;
   font-family: var(--font-mono);
+  width: 100%;
 }
 #typingArena.bn-mode { font-family: var(--font-bn); font-size: 24px; }
 
@@ -99,7 +100,7 @@ button.secondary:hover { background: #475569; }
 .hint { font-size: 13px; color: var(--muted); margin-top: 10px; }
 
 /* Congratulations Screen */
-#congratsScreen { display: none; text-align: center; padding: 20px; }
+#congratsScreen { display: none; text-align: center; padding: 20px; width: 100%; }
 #congratsScreen h2 { color: var(--good); font-size: 32px; margin-bottom: 10px; }
 .score-badge { display: flex; justify-content: center; gap: 20px; margin: 20px 0; flex-wrap: wrap; }
 .score-box { background: var(--bg); padding: 15px 25px; border-radius: 12px; border: 1px solid var(--card-border); }
@@ -360,7 +361,7 @@ footer { width: 100%; text-align: center; padding: 25px; color: var(--muted); fo
 <!-- Firebase Modular SDK Scripts -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { 
+  import {  
     getAuth, 
     createUserWithEmailAndPassword, 
     signInWithEmailAndPassword, 
@@ -370,7 +371,6 @@ footer { width: 100%; text-align: center; padding: 25px; color: var(--muted); fo
     updateProfile 
   } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-  // Your Firebase Configuration (typing-website-b3d1)[cite: 3]
   const firebaseConfig = {
     apiKey: "AIzaSyBi9OFWL9xnPtgq-fU10Zh53YzPxnXrZv4",
     authDomain: "typing-website-b3d1.firebaseapp.com",
@@ -386,7 +386,6 @@ footer { width: 100%; text-align: center; padding: 25px; color: var(--muted); fo
 
   let currentUser = null;
 
-  // DOM Elements
   const openAuthBtn = document.getElementById("openAuthBtn");
   const userProfile = document.getElementById("userProfile");
   const userNameHeader = document.getElementById("userNameHeader");
@@ -413,7 +412,6 @@ footer { width: 100%; text-align: center; padding: 25px; color: var(--muted); fo
   const forgotPassLink = document.getElementById("forgotPassLink");
   const backToLoginBtn = document.getElementById("backToLoginBtn");
 
-  // Track Firebase Auth State (No Email Verification Check)
   onAuthStateChanged(auth, (user) => {
     if (user) {
       currentUser = user;
@@ -429,7 +427,6 @@ footer { width: 100%; text-align: center; padding: 25px; color: var(--muted); fo
     }
   });
 
-  // UI Modal Controls
   function switchAuthMode(mode) {
     loginFormSection.style.display = "none";
     signupFormSection.style.display = "none";
@@ -461,7 +458,6 @@ footer { width: 100%; text-align: center; padding: 25px; color: var(--muted); fo
   document.getElementById("closeAuthLogin").addEventListener("click", () => authModal.style.display = "none");
   document.getElementById("closeAuthSignup").addEventListener("click", () => authModal.style.display = "none");
 
-  // Firebase Sign Up (Without Verification)
   signupSubmitBtn.addEventListener("click", async () => {
     const name = regName.value.trim();
     const email = regEmail.value.trim();
@@ -482,7 +478,6 @@ footer { width: 100%; text-align: center; padding: 25px; color: var(--muted); fo
     }
   });
 
-  // Firebase Login (Without Verification)
   loginSubmitBtn.addEventListener("click", async () => {
     const email = loginEmail.value.trim();
     const password = loginPassword.value.trim();
@@ -501,7 +496,6 @@ footer { width: 100%; text-align: center; padding: 25px; color: var(--muted); fo
     }
   });
 
-  // Firebase Password Reset
   forgotSubmitBtn.addEventListener("click", async () => {
     const email = forgotEmail.value.trim();
     if (!email) {
@@ -518,14 +512,12 @@ footer { width: 100%; text-align: center; padding: 25px; color: var(--muted); fo
     }
   });
 
-  // Logout
   logoutBtn.addEventListener("click", () => {
     signOut(auth).then(() => alert("Logged out successfully."));
   });
 </script>
 
 <script>
-// Main Typing Engine Script
 document.addEventListener("DOMContentLoaded", function() {
 
   const textPools = {
@@ -569,11 +561,6 @@ document.addEventListener("DOMContentLoaded", function() {
   const listenBtn = document.getElementById("listen");
   const stopListenBtn = document.getElementById("stopListen");
 
-  const historyTableBody = document.getElementById("historyTableBody");
-  const leaderboardTableBody = document.getElementById("leaderboardTableBody");
-  const dailyTab = document.getElementById("dailyTab");
-  const weeklyTab = document.getElementById("weeklyTab");
-
   let fullText = "";
   let typedChars = [];
   let timer = null;
@@ -594,8 +581,6 @@ document.addEventListener("DOMContentLoaded", function() {
     dashboardPage.style.display = "flex";
     navDashboard.classList.add("active");
     navTest.classList.remove("active");
-    loadHistory();
-    loadLeaderboard('daily');
   }
 
   navTest.addEventListener("click", showTestPage);
@@ -786,87 +771,11 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("finalWpm").textContent = finalWpmVal;
     document.getElementById("finalAcc").textContent = finalAccVal;
     document.getElementById("finalMistakes").textContent = finalMistakesVal;
-
-    saveScoreRecord(finalWpmVal, finalAccVal, finalMistakesVal);
   }
-
-  function saveScoreRecord(wpm, accuracy, mistakes) {
-    const record = {
-      name: currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : "Guest User",
-      wpm: parseInt(wpm, 10),
-      accuracy: accuracy,
-      mistakes: mistakes,
-      date: new Date().toISOString()
-    };
-
-    let history = JSON.parse(localStorage.getItem("typeflow_history")) || [];
-    history.unshift(record);
-    if (history.length > 20) history.pop();
-    localStorage.setItem("typeflow_history", JSON.stringify(history));
-
-    let leaderboard = JSON.parse(localStorage.getItem("typeflow_leaderboard")) || [];
-    leaderboard.push(record);
-    localStorage.setItem("typeflow_leaderboard", JSON.stringify(leaderboard));
-  }
-
-  function loadHistory() {
-    let history = JSON.parse(localStorage.getItem("typeflow_history")) || [];
-    if (history.length === 0) {
-      historyTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--muted);">No typing history yet. Complete a test!</td></tr>`;
-      return;
-    }
-
-    historyTableBody.innerHTML = "";
-    history.forEach(item => {
-      const dateStr = new Date(item.date).toLocaleString();
-      const row = `<tr><td>${dateStr}</td><td><strong>${item.wpm}</strong></td><td>${item.accuracy}</td><td>${item.mistakes}</td></tr>`;
-      historyTableBody.innerHTML += row;
-    });
-  }
-
-  function loadLeaderboard(type) {
-    let leaderboard = JSON.parse(localStorage.getItem("typeflow_leaderboard")) || [];
-    const now = new Date().getTime();
-
-    const filtered = leaderboard.filter(item => {
-      const itemTime = new Date(item.date).getTime();
-      const diffTime = now - itemTime;
-      if (type === 'daily') {
-        return diffTime <= 24 * 60 * 60 * 1000;
-      } else {
-        return diffTime <= 7 * 24 * 60 * 60 * 1000;
-      }
-    });
-
-    filtered.sort((a, b) => b.wpm - a.wpm);
-
-    if (filtered.length === 0) {
-      leaderboardTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--muted);">No scores recorded for this period yet!</td></tr>`;
-      return;
-    }
-
-    leaderboardTableBody.innerHTML = "";
-    filtered.slice(0, 10).forEach((item, index) => {
-      const dateStr = new Date(item.date).toLocaleDateString();
-      const row = `<tr><td>#${index + 1}</td><td>${item.name}</td><td><strong>${item.wpm}</strong></td><td>${item.accuracy}</td><td>${dateStr}</td></tr>`;
-      leaderboardTableBody.innerHTML += row;
-    });
-  }
-
-  dailyTab.addEventListener("click", () => {
-    dailyTab.classList.add("active");
-    weeklyTab.classList.remove("active");
-    loadLeaderboard('daily');
-  });
-
-  weeklyTab.addEventListener("click", () => {
-    weeklyTab.classList.add("active");
-    dailyTab.classList.remove("active");
-    loadLeaderboard('weekly');
-  });
 
   initTest();
 });
 </script>
+
 </body>
 </html>
