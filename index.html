@@ -52,7 +52,7 @@ main { max-width: 1000px; margin: 30px auto; padding: 0 18px; }
 .control-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
 select, input, button { font: inherit; border-radius: 8px; outline: none; }
-select, input[type="number"], input[type="text"], input[type="email"] { border: 1px solid var(--card-border); padding: 9px 12px; background: var(--bg); color: var(--text); }
+select, input[type="number"], input[type="text"], input[type="email"], input[type="password"] { border: 1px solid var(--card-border); padding: 9px 12px; background: var(--bg); color: var(--text); width: 100%; }
 button { border: 0; padding: 10px 18px; background: var(--accent); color: white; font-weight: 700; cursor: pointer; border-radius: 8px; }
 button.secondary { background: var(--card-border); color: var(--text); }
 button.secondary:hover { background: #475569; }
@@ -122,11 +122,14 @@ table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14p
 th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--card-border); }
 th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
 
-/* Modal Overlay */
+/* Modal Overlay & Auth Tabs */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 9999; }
-.modal { background: var(--card); border: 1px solid var(--card-border); width: 100%; max-width: 400px; padding: 24px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+.modal { background: var(--card); border: 1px solid var(--card-border); width: 100%; max-width: 420px; padding: 24px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
 .modal h3 { margin-top: 0; color: var(--text); }
-.modal input { width: 100%; margin-bottom: 12px; }
+.modal-group { margin-bottom: 12px; }
+.auth-switch { display: flex; background: var(--bg); border-radius: 8px; padding: 4px; margin-bottom: 15px; }
+.auth-tab { flex: 1; text-align: center; padding: 8px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 6px; color: var(--muted); }
+.auth-tab.active { background: var(--accent); color: white; }
 
 footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--card-border); margin-top: 40px; }
 
@@ -295,26 +298,72 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
   </div>
 </main>
 
-<!-- Login / Sign Up Modal with Email OTP Verification -->
+<!-- Authentication Modal (Login / Sign Up / Forgot Password) -->
 <div class="modal-overlay" id="authModal">
   <div class="modal">
-    <!-- Step 1: User Info Input -->
-    <div id="authStep1">
-      <h3>User Login / Register</h3>
-      <p style="font-size:13px; color:var(--muted); margin-bottom:15px;">Enter your details to verify your email.</p>
-      <input type="text" id="userName" placeholder="Your Full Name">
-      <input type="email" id="userEmail" placeholder="Your Email Address">
-      <button id="sendOtpBtn" style="width:100%; margin-top:5px;">Send Verification OTP</button>
-      <button id="closeAuth" class="secondary" style="width:100%; margin-top:8px;">Close</button>
+    <div class="auth-switch">
+      <div class="auth-tab active" id="tabLoginBtn" onclick="switchAuthMode('login')">Login</div>
+      <div class="auth-tab" id="tabSignupBtn" onclick="switchAuthMode('signup')">Sign Up</div>
     </div>
 
-    <!-- Step 2: Email OTP Code Input -->
-    <div id="authStep2" style="display:none;">
-      <h3>Verify Email Code</h3>
-      <p style="font-size:13px; color:var(--muted); margin-bottom:10px;">We sent a 6-digit OTP code to <strong id="sentEmailSpan"></strong>.</p>
-      <input type="text" id="otpInput" placeholder="Enter 6-Digit OTP" maxlength="6" style="text-align:center; font-size:18px; letter-spacing:4px;">
-      <button id="verifyOtpBtn" style="width:100%; margin-top:5px;">Verify & Login</button>
-      <button id="backAuthBtn" class="secondary" style="width:100%; margin-top:8px;">Back</button>
+    <!-- Login Form -->
+    <div id="loginFormSection">
+      <h3>User Login</h3>
+      <div class="modal-group">
+        <label style="font-size:12px; color:var(--muted);">Username or Email</label>
+        <input type="text" id="loginIdentifier" placeholder="Enter username or email">
+      </div>
+      <div class="modal-group">
+        <label style="font-size:12px; color:var(--muted);">Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter password">
+      </div>
+      <button id="loginSubmitBtn" style="width:100%; margin-top:5px;">Login</button>
+      <p style="text-align:center; margin-top:12px; font-size:13px;">
+        <a href="#" onclick="switchAuthMode('forgot')" style="color:var(--accent); text-decoration:none;">Forgot Password?</a>
+      </p>
+      <button id="closeAuthLogin" class="secondary" style="width:100%; margin-top:8px;">Close</button>
+    </div>
+
+    <!-- Sign Up Form (Step 1 & Step 2 for OTP Verification) -->
+    <div id="signupFormSection" style="display:none;">
+      <div id="signupStep1">
+        <h3>Create New Account</h3>
+        <div class="modal-group">
+          <input type="text" id="regName" placeholder="Full Name">
+        </div>
+        <div class="modal-group">
+          <input type="text" id="regUsername" placeholder="Username (unique)">
+        </div>
+        <div class="modal-group">
+          <input type="email" id="regEmail" placeholder="Email Address">
+        </div>
+        <div class="modal-group">
+          <input type="password" id="regPassword" placeholder="Create Password">
+        </div>
+        <button id="sendOtpBtn" style="width:100%; margin-top:5px;">Send Verification OTP</button>
+        <button id="closeAuthSignup" class="secondary" style="width:100%; margin-top:8px;">Close</button>
+      </div>
+
+      <div id="signupStep2" style="display:none;">
+        <h3>Verify Email OTP</h3>
+        <p style="font-size:13px; color:var(--muted); margin-bottom:10px;">Enter 6-digit code sent to <strong id="sentEmailSpan"></strong></p>
+        <div class="modal-group">
+          <input type="text" id="otpInput" placeholder="Enter 6-Digit OTP" maxlength="6" style="text-align:center; font-size:18px; letter-spacing:4px;">
+        </div>
+        <button id="verifyOtpBtn" style="width:100%; margin-top:5px;">Verify & Register</button>
+        <button onclick="backToSignupStep1()" class="secondary" style="width:100%; margin-top:8px;">Back</button>
+      </div>
+    </div>
+
+    <!-- Forgot Password Form -->
+    <div id="forgotFormSection" style="display:none;">
+      <h3>Reset Password</h3>
+      <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">Enter your registered email to receive a password reset link.</p>
+      <div class="modal-group">
+        <input type="email" id="forgotEmail" placeholder="Your Email Address">
+      </div>
+      <button id="forgotSubmitBtn" style="width:100%; margin-top:5px;">Send Reset Instructions</button>
+      <button onclick="switchAuthMode('login')" class="secondary" style="width:100%; margin-top:8px;">Back to Login</button>
     </div>
   </div>
 </div>
@@ -322,9 +371,10 @@ footer { text-align: center; padding: 25px; color: var(--muted); font-size: 13px
 <footer>TypeFlow Platform · Professional Typing Practice</footer>
 
 <script>
+let switchAuthMode;
+let backToSignupStep1;
+
 document.addEventListener("DOMContentLoaded", function() {
-  const TELEGRAM_BOT_TOKEN = "YOUR_BOT_TOKEN_HERE";
-  const TELEGRAM_CHAT_ID = "YOUR_CHAT_ID_HERE";
 
   const textPools = {
     en: {
@@ -335,9 +385,9 @@ document.addEventListener("DOMContentLoaded", function() {
       english_learning: ["read", "books", "listen", "to", "audio", "speak", "clearly", "write", "daily", "practice", "makes", "a", "person", "perfect", "enjoy", "learning", "new", "things"]
     },
     bn: {
-      general: ["আমি", "নিয়মিত", "টাইপ", "শিখি", "অনুশীলন", "করলে", "সবকিছু", "সহজ", "হয়", "বাংলা", "টাইপিং", "খুব", "মজাদার", "কাজ", "ধৈর্য", "ধরে", "কাজ", "করলে", "সাফল্য", "আসে"],
-      ai: ["প্রযুক্তি", "আমাদের", "জীবনকে", "সহজ", "করে", "দিয়েছে", "কম্পিউটার", "ও", "ইন্টারনেট", "এখন", "সবাইর", "জন্য", "খুব", "দরকারি"],
-      dengue: ["পরিষ্কার", "পরিচ্ছন্ন", "থাকুন", "মশার", "উপদ্রব", "থেকে", "বাঁচুন", "বাসাবাড়ির", "আশেপাশে", "পানি", "জমতে", "দিবেন", "না"]
+      general: ["আমি", "নিয়মিত", "টাইপ", "শিখি", "অনুশীলন", "করলে", "সবকিছু", "সহজ", "হয়", "বাংলা", "টাইপিং", "খুব", "মজাদার", "কাজ", "ধৈর্য", "ধরে", "কাজ", "করলে", "সাফল্য", "আসে"],
+      ai: ["প্রযুক্তি", "আমাদের", "জীবনকে", "সহজ", "করে", "দিয়েছে", "কম্পিউটার", "ও", "ইন্টারনেট", "এখন", "সবাইর", "জন্য", "খুব", "দরকারি"],
+      dengue: ["পরিষ্কার", "পরিচ্ছন্ন", "থাকুন", "মশার", "উপদ্রব", "থেকে", "বাঁচুন", "বাসাবাড়ির", "আশেপাশে", "পানি", "জমতে", "দিবেন", "না"]
     }
   };
 
@@ -370,13 +420,24 @@ document.addEventListener("DOMContentLoaded", function() {
   const congratsScreen = document.getElementById("congratsScreen");
   const tryAgainBtn = document.getElementById("tryAgainBtn");
 
+  const listenBtn = document.getElementById("listen");
+  const stopListenBtn = document.getElementById("stopListen");
+
   const authModal = document.getElementById("authModal");
-  const authStep1 = document.getElementById("authStep1");
-  const authStep2 = document.getElementById("authStep2");
+  const loginFormSection = document.getElementById("loginFormSection");
+  const signupFormSection = document.getElementById("signupFormSection");
+  const forgotFormSection = document.getElementById("forgotFormSection");
+  const tabLoginBtn = document.getElementById("tabLoginBtn");
+  const tabSignupBtn = document.getElementById("tabSignupBtn");
+
+  const signupStep1 = document.getElementById("signupStep1");
+  const signupStep2 = document.getElementById("signupStep2");
   const sendOtpBtn = document.getElementById("sendOtpBtn");
   const verifyOtpBtn = document.getElementById("verifyOtpBtn");
-  const backAuthBtn = document.getElementById("backAuthBtn");
-  const closeAuth = document.getElementById("closeAuth");
+  const loginSubmitBtn = document.getElementById("loginSubmitBtn");
+  const forgotSubmitBtn = document.getElementById("forgotSubmitBtn");
+  const closeAuthLogin = document.getElementById("closeAuthLogin");
+  const closeAuthSignup = document.getElementById("closeAuthSignup");
 
   const historyTableBody = document.getElementById("historyTableBody");
   const leaderboardTableBody = document.getElementById("leaderboardTableBody");
@@ -390,7 +451,7 @@ document.addEventListener("DOMContentLoaded", function() {
   let timeLeft = 60;
   let isTyping = false;
   let generatedOtp = "";
-  let tempUserData = {};
+  let tempRegData = {};
 
   let currentUser = localStorage.getItem("typeflow_user") ? JSON.parse(localStorage.getItem("typeflow_user")) : null;
 
@@ -398,7 +459,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (currentUser && currentUser.email) {
       openAuthBtn.style.display = "none";
       userProfile.style.display = "flex";
-      userNameHeader.textContent = `👤 ${currentUser.name}`;
+      userNameHeader.textContent = `👤 ${currentUser.name || currentUser.username}`;
       document.getElementById("userStatus").innerHTML = `Welcome back, <strong>${currentUser.name}</strong> (${currentUser.email})! Your progress is saved.`;
     } else {
       openAuthBtn.style.display = "block";
@@ -446,57 +507,130 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
-  // Modal & Auth OTP Logic
+  // Modal Auth Switcher
+  switchAuthMode = function(mode) {
+    loginFormSection.style.display = "none";
+    signupFormSection.style.display = "none";
+    forgotFormSection.style.display = "none";
+    tabLoginBtn.classList.remove("active");
+    tabSignupBtn.classList.remove("active");
+
+    if (mode === 'login') {
+      loginFormSection.style.display = "block";
+      tabLoginBtn.classList.add("active");
+    } else if (mode === 'signup') {
+      signupFormSection.style.display = "block";
+      signupStep1.style.display = "block";
+      signupStep2.style.display = "none";
+      tabSignupBtn.classList.add("active");
+    } else if (mode === 'forgot') {
+      forgotFormSection.style.display = "block";
+    }
+  };
+
+  backToSignupStep1 = function() {
+    signupStep1.style.display = "block";
+    signupStep2.style.display = "none";
+  };
+
   openAuthBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    authStep1.style.display = "block";
-    authStep2.style.display = "none";
+    switchAuthMode('login');
     authModal.style.display = "flex";
   });
 
-  closeAuth.addEventListener("click", () => {
-    authModal.style.display = "none";
-    keepFocus();
-  });
+  closeAuthLogin.addEventListener("click", () => { authModal.style.display = "none"; keepFocus(); });
+  closeAuthSignup.addEventListener("click", () => { authModal.style.display = "none"; keepFocus(); });
 
-  backAuthBtn.addEventListener("click", () => {
-    authStep1.style.display = "block";
-    authStep2.style.display = "none";
-  });
-
+  // Sign Up & OTP Flow
   sendOtpBtn.addEventListener("click", () => {
-    const name = document.getElementById("userName").value.trim();
-    const email = document.getElementById("userEmail").value.trim();
+    const name = document.getElementById("regName").value.trim();
+    const username = document.getElementById("regUsername").value.trim();
+    const email = document.getElementById("regEmail").value.trim();
+    const password = document.getElementById("regPassword").value.trim();
 
-    if (!name || !email) {
-      alert("Please fill in both name and email.");
+    if (!name || !username || !email || !password) {
+      alert("Please fill in all registration fields.");
       return;
     }
 
-    tempUserData = { name, email };
+    let users = JSON.parse(localStorage.getItem("typeflow_users")) || [];
+    if (users.some(u => u.email === email || u.username === username)) {
+      alert("Email or Username already registered! Please login.");
+      return;
+    }
+
+    tempRegData = { name, username, email, password };
     generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
     document.getElementById("sentEmailSpan").textContent = email;
-    authStep1.style.display = "none";
-    authStep2.style.display = "block";
+    signupStep1.style.display = "none";
+    signupStep2.style.display = "block";
 
-    // Demo Verification Code Popup for Client Testing
-    alert(`[TypeFlow Verification Code]\n\nYour OTP pin code is: ${generatedOtp}`);
+    alert(`[TypeFlow Email Verification]\n\nYour 6-digit OTP code is: ${generatedOtp}`);
   });
 
   verifyOtpBtn.addEventListener("click", () => {
     const inputOtp = document.getElementById("otpInput").value.trim();
 
     if (inputOtp === generatedOtp) {
-      currentUser = tempUserData;
+      let users = JSON.parse(localStorage.getItem("typeflow_users")) || [];
+      users.push(tempRegData);
+      localStorage.setItem("typeflow_users", JSON.stringify(users));
+
+      currentUser = tempRegData;
+      localStorage.setItem("typeflow_user", JSON.stringify(currentUser));
+      updateHeaderState();
+
+      authModal.style.display = "none";
+      alert("🎉 Account created and verified successfully!");
+      keepFocus();
+    } else {
+      alert("❌ Invalid OTP code. Please enter the correct code.");
+    }
+  });
+
+  // Login Flow (Supports Username or Email + Password)
+  loginSubmitBtn.addEventListener("click", () => {
+    const identifier = document.getElementById("loginIdentifier").value.trim();
+    const password = document.getElementById("loginPassword").value.trim();
+
+    if (!identifier || !password) {
+      alert("Please enter your login details.");
+      return;
+    }
+
+    let users = JSON.parse(localStorage.getItem("typeflow_users")) || [];
+    const foundUser = users.find(u => (u.email === identifier || u.username === identifier) && u.password === password);
+
+    if (foundUser) {
+      currentUser = foundUser;
       localStorage.setItem("typeflow_user", JSON.stringify(currentUser));
       updateHeaderState();
       authModal.style.display = "none";
-      sendTelegramLead(currentUser);
-      alert("🎉 Email verified successfully! Welcome to TypeFlow.");
+      alert(`Welcome back, ${currentUser.name}!`);
       keepFocus();
     } else {
-      alert("❌ Invalid OTP code. Please enter the correct 6-digit code.");
+      alert("❌ Invalid email/username or password!");
+    }
+  });
+
+  // Forgot Password Flow
+  forgotSubmitBtn.addEventListener("click", () => {
+    const email = document.getElementById("forgotEmail").value.trim();
+    if (!email) {
+      alert("Please enter your email address.");
+      return;
+    }
+
+    let users = JSON.parse(localStorage.getItem("typeflow_users")) || [];
+    const userExists = users.some(u => u.email === email);
+
+    if (userExists) {
+      alert(`📧 Password reset instructions have been sent to ${email}. (Simulated)`);
+      switchAuthMode('login');
+    } else {
+      alert("❌ This email is not registered in our system.");
     }
   });
 
@@ -505,6 +639,25 @@ document.addEventListener("DOMContentLoaded", function() {
     currentUser = null;
     updateHeaderState();
     alert("Logged out successfully.");
+  });
+
+  // Voice Speech Synthesis implementation
+  listenBtn.addEventListener("click", () => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(fullText);
+      utterance.lang = languageSelect.value === 'bn' ? 'bn-BD' : 'en-US';
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
+    } else {
+      alert("Text-to-speech voice is not supported by your browser.");
+    }
+  });
+
+  stopListenBtn.addEventListener("click", () => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
   });
 
   function generateText() {
@@ -545,6 +698,7 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   function initTest() {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     clearInterval(timer);
     isTyping = false;
     typedChars = [];
@@ -644,6 +798,7 @@ document.addEventListener("DOMContentLoaded", function() {
   tryAgainBtn.addEventListener("click", initTest);
 
   function endTest() {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     clearInterval(timer);
     isTyping = false;
     hiddenInput.blur();
@@ -671,7 +826,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   function saveScoreRecord(wpm, accuracy, mistakes) {
     const record = {
-      name: currentUser ? currentUser.name : "Guest User",
+      name: currentUser ? (currentUser.name || currentUser.username) : "Guest User",
       wpm: parseInt(wpm, 10),
       accuracy: accuracy,
       mistakes: mistakes,
@@ -743,40 +898,6 @@ document.addEventListener("DOMContentLoaded", function() {
     dailyTab.classList.remove("active");
     loadLeaderboard('weekly');
   });
-
-  async function sendTelegramLead(userData) {
-    if (TELEGRAM_BOT_TOKEN === "YOUR_BOT_TOKEN_HERE" || TELEGRAM_CHAT_ID === "YOUR_CHAT_ID_HERE") {
-      return;
-    }
-
-    try {
-      const ipRes = await fetch('https://ipapi.co/json/');
-      const ipData = await ipRes.json();
-
-      const message = `
-🔔 *New Verified Lead Registered!*
-👤 *Name:* ${userData.name}
-📧 *Email:* ${userData.email}
-✅ *Email Status:* Verified (OTP Checked)
-🌍 *Country:* ${ipData.country_name || 'N/A'}
-🏙️ *City:* ${ipData.city || 'N/A'}
-🌐 *IP:* ${ipData.ip || 'N/A'}
-💻 *OS/Device:* ${navigator.platform}
-      `;
-
-      await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: TELEGRAM_CHAT_ID,
-          text: message,
-          parse_mode: 'Markdown'
-        })
-      });
-    } catch (err) {
-      console.log("Telegram lead error:", err);
-    }
-  }
 
   initTest();
 });
