@@ -561,6 +561,11 @@ document.addEventListener("DOMContentLoaded", function() {
   const listenBtn = document.getElementById("listen");
   const stopListenBtn = document.getElementById("stopListen");
 
+  const historyTableBody = document.getElementById("historyTableBody");
+  const leaderboardTableBody = document.getElementById("leaderboardTableBody");
+  const dailyTab = document.getElementById("dailyTab");
+  const weeklyTab = document.getElementById("weeklyTab");
+
   let fullText = "";
   let typedChars = [];
   let timer = null;
@@ -581,6 +586,8 @@ document.addEventListener("DOMContentLoaded", function() {
     dashboardPage.style.display = "flex";
     navDashboard.classList.add("active");
     navTest.classList.remove("active");
+    loadHistory();
+    loadLeaderboard('daily');
   }
 
   navTest.addEventListener("click", showTestPage);
@@ -771,7 +778,84 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("finalWpm").textContent = finalWpmVal;
     document.getElementById("finalAcc").textContent = finalAccVal;
     document.getElementById("finalMistakes").textContent = finalMistakesVal;
+
+    saveScoreRecord(finalWpmVal, finalAccVal, finalMistakesVal);
   }
+
+  function saveScoreRecord(wpm, accuracy, mistakes) {
+    const record = {
+      name: currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : "Guest User",
+      wpm: parseInt(wpm, 10),
+      accuracy: accuracy,
+      mistakes: mistakes,
+      date: new Date().toISOString()
+    };
+
+    let history = JSON.parse(localStorage.getItem("typeflow_history")) || [];
+    history.unshift(record);
+    if (history.length > 20) history.pop();
+    localStorage.setItem("typeflow_history", JSON.stringify(history));
+
+    let leaderboard = JSON.parse(localStorage.getItem("typeflow_leaderboard")) || [];
+    leaderboard.push(record);
+    localStorage.setItem("typeflow_leaderboard", JSON.stringify(leaderboard));
+  }
+
+  function loadHistory() {
+    let history = JSON.parse(localStorage.getItem("typeflow_history")) || [];
+    if (history.length === 0) {
+      historyTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--muted);">No typing history yet. Complete a test!</td></tr>`;
+      return;
+    }
+
+    historyTableBody.innerHTML = "";
+    history.forEach(item => {
+      const dateStr = new Date(item.date).toLocaleString();
+      const row = `<tr><td>${dateStr}</td><td><strong>${item.wpm}</strong></td><td>${item.accuracy}</td><td>${item.mistakes}</td></tr>`;
+      historyTableBody.innerHTML += row;
+    });
+  }
+
+  function loadLeaderboard(type) {
+    let leaderboard = JSON.parse(localStorage.getItem("typeflow_leaderboard")) || [];
+    const now = new Date().getTime();
+
+    const filtered = leaderboard.filter(item => {
+      const itemTime = new Date(item.date).getTime();
+      const diffTime = now - itemTime;
+      if (type === 'daily') {
+        return diffTime <= 24 * 60 * 60 * 1000;
+      } else {
+        return diffTime <= 7 * 24 * 60 * 60 * 1000;
+      }
+    });
+
+    filtered.sort((a, b) => b.wpm - a.wpm);
+
+    if (filtered.length === 0) {
+      leaderboardTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--muted);">No scores recorded for this period yet!</td></tr>`;
+      return;
+    }
+
+    leaderboardTableBody.innerHTML = "";
+    filtered.slice(0, 10).forEach((item, index) => {
+      const dateStr = new Date(item.date).toLocaleDateString();
+      const row = `<tr><td>#${index + 1}</td><td>${item.name}</td><td><strong>${item.wpm}</strong></td><td>${item.accuracy}</td><td>${dateStr}</td></tr>`;
+      leaderboardTableBody.innerHTML += row;
+    });
+  }
+
+  dailyTab.addEventListener("click", () => {
+    dailyTab.classList.add("active");
+    weeklyTab.classList.remove("active");
+    loadLeaderboard('daily');
+  });
+
+  weeklyTab.addEventListener("click", () => {
+    weeklyTab.classList.add("active");
+    dailyTab.classList.remove("active");
+    loadLeaderboard('weekly');
+  });
 
   initTest();
 });
